@@ -1,0 +1,19 @@
+# base on tool https://openapi-generator.tech/
+
+.PHONY: install-tools validate codegen
+
+install-tools:
+	npm install @openapitools/openapi-generator-cli
+
+validate:
+	npx @openapitools/openapi-generator-cli validate -i spec/api.yaml
+
+
+codegen: install-tools
+	mkdir -p build/rust
+	# npx @openapitools/openapi-generator-cli help generate
+	# `modelDocs=false` because it references non-generated documentation (API,...)
+	npx @openapitools/openapi-generator-cli generate -i spec/api.yaml -g rust -o build/rust --global-property models,modelDocs=false
+
+docgen: install-tools
+	echo "TODO"
