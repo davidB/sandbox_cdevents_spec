@@ -1,0 +1,147 @@
+CDEvent:
+  additionalProperties: false
+  type: object
+  required:
+    - context
+    - subject
+  properties:
+    context:
+      $ref: "#/Context"
+    subject:
+      $ref: "#/Subject"
+    customData:
+      oneOf:
+        - type: object
+        - type: string
+          x-contentEncoding: base64
+    customDataContentType:
+      type: string
+
+Context:
+  properties:
+    version:
+      type: string
+      minLength: 1
+    id:
+      $ref: "#/Id"
+    source:
+      description: The source of the event
+      $ref: "#/Source"
+    timestamp:
+      type: string
+      format: date-time
+    schemaUri:
+      type: string
+      minLength: 1
+      format: uri
+    chainId:
+      type: string
+      minLength: 1
+  additionalProperties: false
+  type: object
+  required:
+    - version
+    - id
+    - source
+    - timestamp
+
+Subject:
+  #type: string
+  # $ref: "#/ArtifactPublished"
+  oneOf:
+    - $ref: "#/ArtifactPublished"
+    - $ref: "#/ArtifactDeleted"
+    - $ref: "#/TaskrunStarted"
+  discriminator:
+    propertyName: type
+    mapping:
+      "dev.cdevents.artifact.published.0.1.1": "#/ArtifactPublished"
+      "dev.cdevents.artifact.deleted.0.2.0-draft": "#/ArtifactDeleted"
+      "dev.cdevents.taskrun.started.0.1.1": "#/TaskrunStarted"
+
+Id:
+  type: string
+  minLength: 1
+
+Source:
+  type: string
+  minLength: 1
+  format: uri-reference
+
+ArtifactPublished:
+  properties:
+    id:
+      $ref: "#/Id"
+    source:
+      $ref: "#/Source"
+    type:
+      type: string
+      x-const: dev.cdevents.artifact.published.0.1.1
+    content:
+      properties: {}
+      additionalProperties: false
+      type: object
+  additionalProperties: false
+  type: object
+  required:
+    - id
+    - type
+    - content
+
+ArtifactDeleted:
+  properties:
+    type:
+      type: string
+      x-const: dev.cdevents.artifact.deleted.0.2.0-draft
+    id:
+      $ref: "#/Id"
+    source:
+      description: The source of the artifact
+      $ref: "#/Source"
+    content:
+      properties:
+        user:
+          type: string
+          minLength: 1
+      additionalProperties: false
+      type: object
+  additionalProperties: false
+  type: object
+  required:
+    - id
+    - type
+    - content
+
+TaskrunStarted:
+  properties:
+    id:
+      $ref: "#/Id"
+    source:
+      $ref: "#/Source"
+    type:
+      type: string
+      x-const: dev.cdevents.taskrun.started.0.1.1
+    content:
+      properties:
+        taskName:
+          type: string
+        url:
+          type: string
+        pipelineRun:
+          properties:
+            id:
+              $ref: "#/Id"
+            source:
+              $ref: "#/Source"
+          additionalProperties: false
+          type: object
+          required:
+            - id
+      additionalProperties: false
+      type: object
+  additionalProperties: false
+  type: object
+  required:
+    - id
+    - type
+    - content

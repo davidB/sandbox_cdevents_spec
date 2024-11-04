@@ -1,0 +1,12 @@
+openapi: 3.0.0
+info:
+  version: 0.5.0
+  title: CDEvents
+
+components:
+  schemas:
+    CDEvent:
+      $ref: cdevent.yaml#/CDEvent
+
+# create fake/empty api to be compatible and only generate model
+paths: {}
