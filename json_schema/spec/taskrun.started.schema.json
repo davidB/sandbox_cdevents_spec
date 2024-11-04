@@ -1,0 +1,47 @@
+{
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uri-reference"
+    },
+    "type": {
+      "const": "dev.cdevents.taskrun.started.0.1.1"
+    },
+    "content": {
+      "properties": {
+        "taskName": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "pipelineRun": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1,
+              "format": "uri-reference"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": ["id"]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": ["id", "type", "content"]
+}

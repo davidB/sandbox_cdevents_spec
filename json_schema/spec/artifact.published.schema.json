@@ -1,0 +1,21 @@
+{
+  "properties": {
+    "id": {
+      "$ref": "id.schema.json"
+    },
+    "source": {
+      "$ref": "source.schema.json"
+    },
+    "type": {
+      "const": "dev.cdevents.artifact.published.0.1.1"
+    },
+    "content": {
+      "properties": {},
+      "additionalProperties": false,
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": ["id", "type", "content"]
+}
