@@ -3,7 +3,7 @@ tasks:
   openapi-generator:
     internal: true
     cmds:
-      - docker run --rm -it --name openapi-generator -v ${PWD}:/local --workdir /local openapitools/openapi-generator-cli {{.ARGS}}
+      - docker run --rm -it --name openapi-generator -u $(id -u ${USER}):$(id -g ${USER}) -v ${PWD}:/local --workdir /local openapitools/openapi-generator-cli {{.ARGS}}
     interactive: true
 
   openapi-generator-cli:
@@ -26,10 +26,12 @@ tasks:
           # ARGS: "help validate"
 
   codegen:rust:
+    # TODO configure with  --config xxx.yaml --import-mappings xxx.yaml --type-mappings xxx.yaml
     cmds:
       - task: openapi-generator
         vars:
           ARGS: "generate -i spec/api.yaml -g rust -o build/rust --global-property models,modelDocs=false,generateAliasAsModel=true"
+          #ARGS: "batch openapi-generator/rust.conf.yaml" # didn't find how to set globalProperty via configuration
     sources:
       - spec/**.yaml
     generates:
