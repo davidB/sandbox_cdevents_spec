@@ -1,3 +1,6 @@
+# In this file, we try to be near to the spec 0.4 but with some changes:
+# - we use move content of context.type to subject.type
+
 CDEvent:
   additionalProperties: false
   type: object
