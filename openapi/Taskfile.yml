@@ -1,0 +1,46 @@
+version: "3"
+tasks:
+  openapi-generator:
+    internal: true
+    cmds:
+      - docker run --rm -it --name openapi-generator -v ${PWD}:/local --workdir /local openapitools/openapi-generator-cli {{.ARGS}}
+    interactive: true
+
+  openapi-generator-cli:
+    desc: allow to call openapi-generator-cli directly by passing arguments after `--` (eg. `task openapi-generator-cli -- help`)
+    cmds:
+      - task: openapi-generator
+        vars:
+          ARGS: "{{ .CLI_ARGS }}"
+
+  ci:
+    cmds:
+      - task: validate
+      - task: codegen:rust
+
+  validate:
+    cmds:
+      - task: openapi-generator
+        vars:
+          ARGS: "validate -i spec/api.yaml"
+          # ARGS: "help validate"
+
+  codegen:rust:
+    cmds:
+      - task: openapi-generator
+        vars:
+          ARGS: "generate -i spec/api.yaml -g rust -o build/rust --global-property models,modelDocs=false,generateAliasAsModel=true"
+    sources:
+      - spec/**.yaml
+    generates:
+      - build/rust/**
+
+  codegen:markdown:
+    cmds:
+      - task: openapi-generator
+        vars:
+          ARGS: "generate -i spec/api.yaml -g markdown -o build/markdown --global-property models,modelDocs=false,generateAliasAsModel=true"
+    sources:
+      - spec/**.yaml
+    generates:
+      - build/markdown/**
