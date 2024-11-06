@@ -1,0 +1,25 @@
+Artifact:
+  allOf:
+    - $ref: "cdevent.yaml#/Subject"
+    - type: object
+      additionalProperties: false
+      properties:
+        predicate:
+          oneOf:
+            - $ref: "#/Published"
+            - $ref: "#/Deleted"
+          discriminator:
+            propertyName: type
+
+Published:
+  $ref: "cdevent.yaml#/Predicate"
+
+Deleted:
+  allOf:
+    - $ref: "cdevent.yaml#/Predicate"
+    - type: object
+      properties:
+        user:
+          type: string
+          minLength: 1
+      additionalProperties: false

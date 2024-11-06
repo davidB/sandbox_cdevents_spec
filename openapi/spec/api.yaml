@@ -6,7 +6,7 @@ info:
 components:
   schemas:
     CDEvent:
-      $ref: cdevent.yaml#/CDEvent
+      $ref: v6/cdevent.yaml#/CDEvent
 
 # create fake/empty api to be compatible and only generate model
 paths: {}

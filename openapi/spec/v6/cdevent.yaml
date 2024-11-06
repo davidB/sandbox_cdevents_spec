@@ -1,0 +1,97 @@
+# In this file, we start from spec 0.4 but try to be more like the documentation spec
+# and to translate it into doc & sdk with some changes:
+# - one type per subject
+# - one type per predicate
+# - remove of the subject.content, replace by subject.predicate
+# - the list of predicates per subject
+
+CDEvent:
+  additionalProperties: false
+  type: object
+  required:
+    - context
+    - subject
+  properties:
+    context:
+      $ref: "#/Context"
+    subject:
+      oneOf:
+        - $ref: "artifact.yaml#/Artifact"
+        - $ref: "taskrun.yaml#/Taskrun"
+        - $ref: "testcaserun.yaml#/Testcaserun"
+      discriminator:
+        propertyName: type
+    customData:
+      oneOf:
+        - type: object
+        - type: string
+          x-contentEncoding: base64
+    customDataContentType:
+      type: string
+
+Context:
+  properties:
+    version:
+      type: string
+      minLength: 1
+    id:
+      $ref: "#/Id"
+    source:
+      description: The source of the event
+      $ref: "#/Source"
+    timestamp:
+      type: string
+      format: date-time
+    schemaUri:
+      type: string
+      minLength: 1
+      format: uri
+    chainId:
+      type: string
+      minLength: 1
+  additionalProperties: false
+  type: object
+  required:
+    - version
+    - id
+    - source
+    - timestamp
+
+Subject:
+  type: object
+  properties:
+    type:
+      type: string
+    id:
+      description: id of the subject
+      examples:
+        - tenant1/12345-abcde
+        - namespace/pipelinerun-1234
+      $ref: "#/Id"
+    source:
+      $ref: "#/Source"
+    predicate:
+      $ref: "#/Predicate"
+  required:
+    - id
+    - type
+    - predicate
+
+Predicate:
+  type: object
+  properties:
+    type:
+      type: string
+
+Id:
+  type: string
+  minLength: 1
+
+Source:
+  type: string
+  minLength: 1
+  format: uri-reference
+
+Url:
+  type: string
+  format: uri-reference

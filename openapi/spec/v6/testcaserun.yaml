@@ -1,0 +1,32 @@
+Testcaserun:
+  allOf:
+    - $ref: "cdevent.yaml#/Subject"
+    - type: object
+      additionalProperties: false
+      properties:
+        predicate:
+          oneOf:
+            - $ref: "#/Started"
+          discriminator:
+            propertyName: type
+
+Started:
+  allOf:
+    - $ref: "cdevent.yaml#/Predicate"
+    - type: object
+      properties:
+        taskName:
+          type: string
+        url:
+          $ref: "cdevent.yaml#/Url"
+        pipelineRun:
+          properties:
+            id:
+              $ref: "cdevent.yaml#/Id"
+            source:
+              $ref: "cdevent.yaml#/Source"
+          additionalProperties: false
+          type: object
+          required:
+            - id
+      additionalProperties: false
