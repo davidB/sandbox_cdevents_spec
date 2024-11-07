@@ -22,7 +22,7 @@ tasks:
     cmds:
       - task: openapi-generator
         vars:
-          ARGS: "validate -i spec/api.yaml"
+          ARGS: "validate -i spec/openapi.yaml"
           # ARGS: "help validate"
 
   codegen:rust:
@@ -30,7 +30,7 @@ tasks:
     cmds:
       - task: openapi-generator
         vars:
-          ARGS: "generate -i spec/api.yaml -g rust -o build/rust --global-property models,modelDocs=false,generateAliasAsModel=true"
+          ARGS: "generate -i spec/openapi.yaml -g rust -o build/rust --global-property models,modelDocs=false,generateAliasAsModel=true"
           #ARGS: "batch openapi-generator/rust.conf.yaml" # didn't find how to set globalProperty via configuration
     sources:
       - spec/**.yaml
@@ -41,7 +41,7 @@ tasks:
     cmds:
       - task: openapi-generator
         vars:
-          ARGS: "generate -i spec/api.yaml -g markdown -o build/markdown --global-property models,modelDocs=false,generateAliasAsModel=true"
+          ARGS: "generate -i spec/openapi.yaml -g markdown -o build/markdown --global-property models,modelDocs=false,generateAliasAsModel=true"
     sources:
       - spec/**.yaml
     generates:
