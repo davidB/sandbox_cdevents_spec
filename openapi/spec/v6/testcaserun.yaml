@@ -1,4 +1,6 @@
 Testcaserun:
+  x-stage: testing
+  title: Testcaserun
   allOf:
     - $ref: "cdevent.yaml#/Subject"
     - type: object
@@ -6,27 +8,72 @@ Testcaserun:
       properties:
         predicate:
           oneOf:
-            - $ref: "#/Started"
+            - $ref: "#/TestcaserunStarted"
           discriminator:
-            propertyName: type
+            propertyName: kind
 
-Started:
+TestcaserunStarted:
+  title: TestcaserunStarted
   allOf:
     - $ref: "cdevent.yaml#/Predicate"
     - type: object
-      properties:
-        taskName:
-          type: string
-        url:
-          $ref: "cdevent.yaml#/Url"
-        pipelineRun:
-          properties:
-            id:
-              $ref: "cdevent.yaml#/Id"
-            source:
-              $ref: "cdevent.yaml#/Source"
-          additionalProperties: false
-          type: object
-          required:
-            - id
       additionalProperties: false
+      required:
+        - environment
+      properties:
+        trigger:
+          $ref: "#/Trigger"
+        environment:
+          $ref: "cdevent.yaml#/EntityRef"
+        testSuiteRun:
+          $ref: "cdevent.yaml#/EntityRef"
+        testCase:
+          $ref: "#/Testcase"
+
+Trigger:
+  title: Trigger
+  type: object
+  properties:
+    kind:
+      $ref: "#/TriggerKind"
+    uri:
+      $ref: "cdevent.yaml#/Uri"
+
+TriggerKind:
+  title: TriggerKind
+  type: string
+  enum:
+    - manual
+    - pipeline
+    - event
+    - schedule
+    - other
+
+Testcase:
+  title: Testcase
+  type: object
+  additionalProperties: false
+  required:
+    - id
+  properties:
+    id:
+      $ref: "cdevent.yaml#/Id"
+    version:
+      # TODO use the type "cdevent.yaml#/Version"
+      type: string
+    name:
+      type: string
+    kind:
+      title: TestcaseKind
+      type: string
+      enum:
+        - performance
+        - functional
+        - unit
+        - security
+        - compliance
+        - integration
+        - e2e
+        - other
+    uri:
+      $ref: "cdevent.yaml#/Uri"

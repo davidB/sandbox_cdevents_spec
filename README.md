@@ -49,9 +49,13 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
 ### OpenAPI
 
 - use [Taskfile](https://taskfile.dev/) to run actions (validate, codegen, docgen,...)
-- use OpenAPI 3.0 (supported by more tools)
-  - In 3.0, Models are extended on json schema draft-07
-  - In 3.1, Models are extended on json schema 2020-12
+- try to [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0.html#schema-object) (support in alpha/beta by most of the tools)
+  - In 3.0,
+    - models are extended on json schema draft-07
+  - In 3.1,
+    - models are extended on json schema 2020-12
+    - allow siblings info to $ref (like override of description)
+    - allow const? (part of json schema 2020-12)
 - use yaml format (less verbose than json, simpler for multi-line strings)
 - create a root `api.yaml` file without `path`, we focus on the `components` part (the models)
 - use of discriminator for subject/predicate

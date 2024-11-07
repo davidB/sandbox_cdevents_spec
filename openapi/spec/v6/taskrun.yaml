@@ -1,4 +1,6 @@
 Taskrun:
+  x-stage: core
+  title: Taskrun
   allOf:
     - $ref: "cdevent.yaml#/Subject"
     - type: object
@@ -8,27 +10,22 @@ Taskrun:
           oneOf:
             - $ref: "#/TaskrunStarted"
           discriminator:
-            propertyName: type
-            mapping:
-              - "started": "#/TaskrunStarted"
+            propertyName: kind
+            # mapping is not supported yet by generator (rust)
+            # mapping:
+            #   # started: "#/TaskrunStarted"
+            #   # started: "TaskrunStarted"
 
 TaskrunStarted:
+  title: TaskrunStarted
   allOf:
     - $ref: "cdevent.yaml#/Predicate"
     - type: object
+      additionalProperties: false
       properties:
         taskName:
           type: string
-        url:
-          $ref: "cdevent.yaml#/Url"
+        uri:
+          $ref: "cdevent.yaml#/Uri"
         pipelineRun:
-          properties:
-            id:
-              $ref: "cdevent.yaml#/Id"
-            source:
-              $ref: "cdevent.yaml#/Source"
-          additionalProperties: false
-          type: object
-          required:
-            - id
-      additionalProperties: false
+          $ref: "cdevent.yaml#/EntityRef"
