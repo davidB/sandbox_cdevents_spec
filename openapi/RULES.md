@@ -1,0 +1,28 @@
+# Rules to write the spec
+
+- a valid yaml file
+- a valid openapi file
+- type name is PascalCase
+- sort fields in this order (to ease diff, review,...):
+  - title
+  - x-stage
+  - x-deprecated
+  - const
+  - type
+  - description
+  - examples
+  - format
+  - pattern
+  - default
+  - enum
+  - items
+  - allOf
+  - oneOf
+  - anyOf
+  - discriminator
+  - additionalProperties
+  - required
+  - dependentRequired
+  - properties
+- do not use `examples` for `default`
+- do not use `example`, always use `examples` (`example` is deprecated, and it simply works for parser/generator)
