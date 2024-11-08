@@ -1,3 +1,4 @@
+# SDK Common -------------------------------------------------------------------
 # look at the doc of batch command + gradle plugin
 # https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-gradle-plugin/README.adoc
 verbose: false
@@ -5,8 +6,6 @@ logToStderr: true
 cleanupOutput: true
 inputSpec: spec/openapi.yaml
 validateSpec: true
-outputDir: build/rust
-generatorName: rust
 # use of global propeties is not well documented
 # see
 # - [[BUG] Global properties configuration for batch command · Issue #7581 · OpenAPITools/openapi-generator](https://github.com/OpenAPITools/openapi-generator/issues/7581)
@@ -14,14 +13,18 @@ generatorName: rust
 globalProperties:
   models: ""
   modelDocs: false
-  modelTests: true
+  modelTests: false
   generateAliasAsModel: true
-additionalProperties:
-  avoidBoxedModels: true
-  bestFitInt: true
 inlineSchemaNameMappings:
   CDEvent_context: Context
   CDEvent_subject: Subject
   Artifact_allOf_predicate: ArtifactPredicates
   Taskrun_allOf_predicate: TaskrunPredicates
   Testcaserun_allOf_predicate: TestcaserunPredicates
+
+# SDK {{lang}}------------------------------------------------------------------
+outputDir: build/rust
+generatorName: rust
+additionalProperties:
+  avoidBoxedModels: true
+  bestFitInt: true

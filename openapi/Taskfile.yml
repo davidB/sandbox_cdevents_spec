@@ -13,6 +13,21 @@ tasks:
         vars:
           ARGS: "{{ .CLI_ARGS }}"
 
+  openapi-generator:generate:
+    internal: true
+    cmds:
+      - rm -rf build/{{.LANG}}
+      - task: openapi-generator
+        vars:
+          # `batch` is less verbose than `generate` (less warning and info logged) but allow to groug into one config file
+          # ARGS: "generate -i spec/openapi.yaml -g {{.LANG}} -o build/{{.LANG}} --global-property models,modelDocs=false,generateAliasAsModel=true"
+          ARGS: "generate --config openapi-generator.conf.d/{{.LANG}}.yaml"
+          # ARGS: "batch --fail-fast --verbose openapi-generator.conf.d/{{.LANG}}.yaml"
+    sources:
+      - spec/**.yaml
+    generates:
+      - build/{{.LANG}}/**
+
   ci:
     cmds:
       - task: validate
@@ -27,17 +42,26 @@ tasks:
 
   codegen:rust:
     cmds:
-      - rm -rf build/rust
-      - task: openapi-generator
+      - task: openapi-generator:generate
         vars:
-          # `batch` is less verbose than `generate` (less warning and info logged) but allow to groug into one config file
-          # ARGS: "generate -i spec/openapi.yaml -g rust -o build/rust --global-property models,modelDocs=false,generateAliasAsModel=true"
-          ARGS: "generate --config rust.conf.yaml"
-          # ARGS: "batch --fail-fast --verbose rust.conf.yaml"
-    sources:
-      - spec/**.yaml
-    generates:
-      - build/rust/**
+          LANG: rust
+
+  codegen:java:
+    cmds:
+      - task: openapi-generator:generate
+        vars:
+          LANG: java
+
+  # codegen:java:
+  #   cmds:
+  #     - rm -rf build/java
+  #     - task: openapi-generator
+  #       vars:
+  #         ARGS: "generate --config openapi-generator.conf.d/java.yaml"
+  #   sources:
+  #     - spec/**.yaml
+  #   generates:
+  #     - build/java/**
 
   codegen:markdown:
     cmds:
