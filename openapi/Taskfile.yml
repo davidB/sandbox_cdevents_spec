@@ -31,7 +31,7 @@ tasks:
   ci:
     cmds:
       - task: validate
-      - task: codegen:rust
+      - task: codegen
 
   validate:
     cmds:
@@ -40,11 +40,19 @@ tasks:
           ARGS: "validate -i spec/openapi.yaml"
           # ARGS: "help validate"
 
-  codegen:rust:
+  codegen:
+    cmds:
+      - task: codegen:java
+      - task: codegen:go
+      - task: codegen:markdown
+      - task: codegen:python
+      - task: codegen:rust
+
+  codegen:go:
     cmds:
       - task: openapi-generator:generate
         vars:
-          LANG: rust
+          LANG: go
 
   codegen:java:
     cmds:
@@ -52,24 +60,20 @@ tasks:
         vars:
           LANG: java
 
-  # codegen:java:
-  #   cmds:
-  #     - rm -rf build/java
-  #     - task: openapi-generator
-  #       vars:
-  #         ARGS: "generate --config openapi-generator.conf.d/java.yaml"
-  #   sources:
-  #     - spec/**.yaml
-  #   generates:
-  #     - build/java/**
-
   codegen:markdown:
     cmds:
-      - rm -rf build/markdown
-      - task: openapi-generator
+      - task: openapi-generator:generate
         vars:
-          ARGS: "generate -i spec/openapi.yaml -g markdown -o build/markdown --global-property models,modelDocs=false,generateAliasAsModel=true"
-    sources:
-      - spec/**.yaml
-    generates:
-      - build/markdown/**
+          LANG: markdown
+
+  codegen:python:
+    cmds:
+      - task: openapi-generator:generate
+        vars:
+          LANG: python
+
+  codegen:rust:
+    cmds:
+      - task: openapi-generator:generate
+        vars:
+          LANG: rust

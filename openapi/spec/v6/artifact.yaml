@@ -11,9 +11,9 @@ Artifact:
             - $ref: "#/ArtifactDeleted"
           discriminator:
             propertyName: kind
-            mapping:
-              published: ArtifactPublished
-              deleted: ArtifactDeleted
+            # mapping:
+            #   published: "ArtifactPublished"
+            #   deleted: "ArtifactDeleted"
 
 ArtifactPublished:
   title: ArtifactPublished
