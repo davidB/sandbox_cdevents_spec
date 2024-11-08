@@ -1,2 +1,3 @@
 [tools]
 task = "3"
+java = "21"
