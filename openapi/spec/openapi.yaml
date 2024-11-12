@@ -2,6 +2,11 @@ openapi: 3.1.0
 info:
   version: 0.5.0
   title: CDEvents
+  description: |
+    A common specification for Continuous Delivery events: [cdevents](https://cdevents.dev/)
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 components:
   schemas:
@@ -9,4 +14,24 @@ components:
       $ref: v6/cdevent.yaml#/CDEvent
 
 # create fake/empty api to be compatible and only generate model
-paths: {}
+servers:
+  - url: http://localhost:8080
+paths:
+  {}
+  # /cdevents:
+  #   post:
+  #     security: []
+  #     operationId: cdevents
+  #     summary: Process a CDEvent (eg. from json -> validate -> to json)
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: "#/components/schemas/CDEvent"
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           $ref: "#/components/schemas/CDEvent"
+  #       "400":
+  #         description: Invalid CDEvent

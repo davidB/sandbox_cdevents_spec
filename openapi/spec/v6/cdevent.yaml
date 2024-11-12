@@ -45,8 +45,8 @@ CDEvent:
         propertyName: kind
     # customData:
     #   $ref: "#/CustomData"
-      # description: |
-      #   The `customData` and `customDataContentType` fields can be used to carry additional data in CDEvents.
+    #   description: |
+    #     The `customData` and `customDataContentType` fields can be used to carry additional data in CDEvents.
     customDataContentType:
       $ref: "#/CustomDataContentType"
 
@@ -55,10 +55,16 @@ Context:
   # description:
   examples:
     - version: "0.5.0-draft"
-      id : "A234-1234-1234"
-      source : "/staging/tekton/"
-      timestamp : "2018-04-05T17:31:00Z"
-      schemaUri:  "https://myorg.com/cdevents/schema/taskrun-started-1-1-0"
+      id: "A234-1234-1234"
+      source: "/staging/tekton/"
+      timestamp: "2018-04-05T17:31:00Z"
+      schemaUri: "https://myorg.com/cdevents/schema/taskrun-started-1-1-0"
+  additionalProperties: false
+  required:
+    - version
+    - id
+    - source
+    - timestamp
   properties:
     version:
       $ref: "#/Version"
@@ -112,13 +118,6 @@ Context:
     chainId:
       type: string
       minLength: 1
-  additionalProperties: false
-  type: object
-  required:
-    - version
-    - id
-    - source
-    - timestamp
 
 Subject:
   type: object
@@ -141,6 +140,7 @@ Subject:
   properties:
     kind:
       type: string
+      readOnly: true
     id:
       $ref: "#/Id"
       description: |
@@ -175,6 +175,7 @@ Predicate:
   properties:
     kind:
       type: string
+      readOnly: true
 
 CustomData:
   # description: |
@@ -237,8 +238,8 @@ Version:
   type: string
   pattern: '\d+\.\d+\.\d+(-.*)?'
   examples:
-    - '0.4.0'
-    - '0.5.0-draft'
+    - "0.4.0"
+    - "0.5.0-draft"
 
 Id:
   title: Id
