@@ -25,3 +25,4 @@ inlineSchemaNameMappings:
 # SDK {{lang}}------------------------------------------------------------------
 outputDir: build/markdown
 generatorName: markdown
+templateDir: templates/markdown

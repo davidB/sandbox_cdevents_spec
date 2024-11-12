@@ -16,8 +16,7 @@ tasks:
       # with docker, it's not possible to use custom templates by changing the classpath to include the templates directory
       # - docker run --rm -it --name openapi-generator -u $(id -u ${USER}):$(id -g ${USER}) -v ${PWD}:/local --workdir /local openapitools/openapi-generator-cli {{.ARGS}}
       - task: openapi-generator:download-jar
-      - java -cp openapi-generator.conf.d/resources -jar .cache/openapi-generator-cli.jar {{.ARGS}}
-      # - java -cp openapi-generator.conf.d/resources:.cache/openapi-generator-cli.jar org.openapitools.codegen.OpenAPIGenerator {{.ARGS}}
+      - java -cp openapi-generator.conf.d/resources:.cache/openapi-generator-cli.jar org.openapitools.codegen.OpenAPIGenerator {{.ARGS}}
     interactive: true
 
   openapi-generator-cli:
@@ -39,6 +38,7 @@ tasks:
           # ARGS: "batch --fail-fast --verbose openapi-generator.conf.d/{{.LANG}}.yaml"
     sources:
       - spec/**.yaml
+      - openapi-generator.conf.d/resources/templates/{{.LANG}}/**
     generates:
       - build/{{.LANG}}/**
 
