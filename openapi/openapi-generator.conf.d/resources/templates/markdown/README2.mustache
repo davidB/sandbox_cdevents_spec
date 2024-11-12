@@ -1,0 +1,12 @@
+# Documentation for {{appName}}
+
+## Documentation for Models
+
+{{#modelPackage}}
+{{#models}}{{#model}} - [{{{classname}}}](./{{{modelPackage}}}/{{modelDocPath}}{{{classFilename}}}.md)
+{{/model}}{{/models}}
+{{/modelPackage}}
+{{^modelPackage}}
+No model defined in this package
+{{/modelPackage}}
+{{/generateModelDocs}}

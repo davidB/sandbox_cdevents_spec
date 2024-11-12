@@ -37,11 +37,12 @@ tasks:
           # ARGS: "generate -i spec/openapi.yaml -g {{.LANG}} -o build/{{.LANG}} --global-property models,modelDocs=false,generateAliasAsModel=true"
           ARGS: "generate --config openapi-generator.conf.d/{{.LANG}}.yaml"
           # ARGS: "batch --fail-fast --verbose openapi-generator.conf.d/{{.LANG}}.yaml"
-    sources:
-      - spec/**.yaml
-      - openapi-generator.conf.d/resources/templates/{{.LANG}}/**
-    generates:
-      - build/{{.LANG}}/**
+    # sources:
+    #   - spec/**
+    #   - openapi-generator.conf.d/resources/templates/{{.LANG}}/**
+    #   - openapi-generator.conf.d/{{.LANG}}.yaml
+    # generates:
+    #   - build/{{.LANG}}/**
 
   schematools:download:
     run: once
