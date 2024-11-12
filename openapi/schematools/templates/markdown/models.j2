@@ -1,0 +1,4 @@
+{# type=models,filename=model.md,min_version=0.2.0 #}
+{% for model in models %}
+{{ model | json_encode() | safe }}
+{% endfor %}

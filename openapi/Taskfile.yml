@@ -1,4 +1,5 @@
 version: "3"
+
 tasks:
   openapi-generator:download-jar:
     run: once
@@ -42,6 +43,67 @@ tasks:
     generates:
       - build/{{.LANG}}/**
 
+  schematools:download:
+    run: once
+    internal: true
+    env:
+      SCHEMATOOLS_VERSION: v0.19.2
+      SCHEMATOOLS_PLATFORM: linux-amd64
+    cmds:
+      - mkdir .cache || true
+      - curl -sLfo .cache/schematools.tar.gz https://github.com/kstasik/schema-tools/releases/download/${SCHEMATOOLS_VERSION}/schematools-${SCHEMATOOLS_PLATFORM}.tar.gz
+      - tar -xf .cache/schematools.tar.gz -C.cache/ schematools-${SCHEMATOOLS_PLATFORM}
+      - mv .cache/schematools-${SCHEMATOOLS_PLATFORM} .cache/schematools
+      - chmod u+x .cache/schematools
+      - rm .cache/schematools.tar.gz
+    status:
+      - test -d .cache
+      - test -f .cache/schematools
+
+  schematools:
+    internal: true
+    cmds:
+      - task: schematools:download
+      - .cache/schematools {{.ARGS}}
+    interactive: true
+
+  schematools-cli:
+    desc: allow to call schematools directly by passing arguments after `--` (eg. `task schematools-cli -- --help`)
+    cmds:
+      - task: schematools
+        vars:
+          ARGS: "{{ .CLI_ARGS }}"
+
+  schematools:generate:
+    internal: true
+    cmds:
+      # - rm -rf build/{{.LANG}}
+      - task: schematools
+        vars:
+          ARGS: "codegen openapi -vv spec/openapi.yaml --template schematools/templates/{{.LANG}} --target-dir build/schematools/{{.LANG}} --wrappers"
+          # ARGS: >
+          #   chain -vv
+          #   -c 'process dereference spec/openapi.yaml --skip-root-internal-references --skip-references json.schemas.registry.com --create-internal-references'
+          #   -c 'process merge-all-of - --leave-invalid-properties --filter "x-skip!=true"'
+          #   -c 'process name - --overwrite --resource-method-version'
+          #   -c 'codegen openapi - --template schematools/templates/{{.LANG}} --target-dir build/schematools/{{.LANG}}'
+    # sources:
+    #   - spec/**.yaml
+    #   - schematools.conf.d/templates/{{.LANG}}/**
+    # generates:
+    #   - build/schematools/{{.LANG}}/**
+
+  schematools:debug:
+    cmds:
+      - mkdir -p build/schematools || true
+      - task: schematools
+        vars:
+          ARGS: >
+            chain -vv
+            -c 'process dereference spec/openapi.yaml --skip-root-internal-references --skip-references json.schemas.registry.com --create-internal-references'
+            -c 'process merge-all-of - --leave-invalid-properties --filter "x-skip!=true"'
+            -c 'output -o yaml --to-file build/schematools/openapi.yaml'
+
   ci:
     cmds:
       - task: validate
@@ -52,7 +114,9 @@ tasks:
       - task: openapi-generator
         vars:
           ARGS: "validate -i spec/openapi.yaml"
-          # ARGS: "help validate"
+      # - task: schematools
+      #   vars:
+      #     ARGS: "validate openapi spec/openapi.yaml"
 
   codegen:
     cmds:
@@ -77,6 +141,12 @@ tasks:
   codegen:markdown:
     cmds:
       - task: openapi-generator:generate
+        vars:
+          LANG: markdown
+
+  codegen:markdown2:
+    cmds:
+      - task: schematools:generate
         vars:
           LANG: markdown
 
