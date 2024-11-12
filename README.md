@@ -45,6 +45,12 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
 - one file per type
 - use oneOf for polymorphism (but no discriminator as not supported by json schema)
 - use `const` for constant values (like `enum` with a single value)
+- try to use:
+  - [x] <https://quicktype.io/>
+    - doesn't support json schema 2020-12 (try to switch to draft 07 & 06)
+  - [ ] [schematools](https://github.com/kstasik/schema-tools)
+    - see also the OpenAPI section
+    - TODO try with "discriminator" (no in the spec, but could be managed by the tool)
 
 ### OpenAPI
 
@@ -62,8 +68,23 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
 - use `x-const` for constant values (like `const` in json schema) instead of `enum` with a single value
 - use `subject.type` to discriminate subjects and use the type of the event (aka `dev.events.{subject}.{predicate}`)
   - Maybe to replace by the name of the component (that will simplify the code generation, no mapping needed)
-- OpenAPI ecosystem provide lot of codegenerator, we will focus on few that allow to use our own templates (and maybe extensions)
-  - [ ] [openapi-generator](https://openapi-generator.tech/)
-  - [ ] [swagger-codegen](https://github.com/swagger-api/swagger-codegen)
+- OpenAPI ecosystem provide lot of codegenerator (see [OpenAPI.Tools - an Open Source list of great tools for OpenAPI.](https://openapi.tools/#sdk)), we will focus on few that allow to use our own templates (and maybe extensions)
+  - [x] [openapi-generator](https://openapi-generator.tech/)
+    - java based
+    - lot of templates, lot of contributors over time,
+    - documentations, examples & some articles (like [OpenAPI Custom Generator | Baeldung](https://www.baeldung.com/java-openapi-custom-generator))
+    - options to use templates but the template engine is logicless (logic => create a generator in java :-( )
+    - internal datamodel used by templates depend on the generator and should prepare/expose logic (isXxx)
+    - currently the one, I spent the most time on
+  - [x] ~~[swagger-codegen](https://github.com/swagger-api/swagger-codegen)~~
+    - openapi-generator is based on swagger-codegen, fork mainly due to ownership company vs community
   - [ ] [schematools](https://github.com/kstasik/schema-tools)
+    - from rust ecosystem (not listed on OpenAPI.Tools)
+    - I like the approach (vs openapi-generator)
+    - early/ young project
+    - more powerful template engine (tera, based on jinja2, with more buitin functions than mustache or handlebars)
+    - buggy (not able to validate my spec but able to process it)
+    - I don't know how to use generate multiple files in some cases (eg. 1 file per type)
+    - The internal model used by template doesn't expose all the information (title, ...)
+    - Dereference looks a good idea but not to generate models, because it's not just an include and we lost title and additional info injected by our layout
   - comparison: [OpenAPI Generator vs Swagger Codegen v3: Which API Generator Is Best for Your Needs? - Engineer From Nepal](https://engineerfromnepal.com/blog/openapi-generator-vs-swagger-codegen-v3/), [FAQ: General | OpenAPI Generator](https://openapi-generator.tech/docs/faq/)
