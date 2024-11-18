@@ -1,5 +1,8 @@
 # In this file, we try to be near to the spec 0.4 but with some changes:
-# - we use move content of context.type to subject.type
+# - use `x-const` for constant values (like `const` in json schema) instead of `enum` with a single value
+# - move content of `context.type` to `subject.type`
+# - use `subject.type` to discriminate subjects and use the type of the event (aka `dev.events.{subject}.{predicate}`)
+#   - Maybe to replace by the name of the component (that will simplify the code generation, no mapping needed) ... see v6
 
 CDEvent:
   additionalProperties: false

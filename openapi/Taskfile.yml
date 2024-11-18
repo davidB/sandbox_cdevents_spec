@@ -111,6 +111,7 @@ tasks:
       - task: codegen
 
   validate:
+    desc: Validate the spec
     cmds:
       - task: openapi-generator
         vars:
@@ -120,6 +121,7 @@ tasks:
       #     ARGS: "validate openapi spec/openapi.yaml"
 
   codegen:
+    desc: Generate code from the spec (all languages)
     cmds:
       - task: codegen:java
       - task: codegen:go
@@ -128,18 +130,21 @@ tasks:
       - task: codegen:rust
 
   codegen:go:
+    desc: Generate code from the spec (go)
     cmds:
       - task: openapi-generator:generate
         vars:
           LANG: go
 
   codegen:java:
+    desc: Generate code from the spec (java)
     cmds:
       - task: openapi-generator:generate
         vars:
           LANG: java
 
   codegen:markdown:
+    desc: Generate code from the spec (markdown) <-- documentation
     cmds:
       - task: openapi-generator:generate
         vars:
@@ -152,12 +157,14 @@ tasks:
           LANG: markdown
 
   codegen:python:
+    desc: Generate code from the spec (python)
     cmds:
       - task: openapi-generator:generate
         vars:
           LANG: python
 
   codegen:rust:
+    desc: Generate code from the spec (rust)
     cmds:
       - task: openapi-generator:generate
         vars:

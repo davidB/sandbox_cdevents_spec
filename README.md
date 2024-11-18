@@ -6,8 +6,9 @@ And to generate documentation and SDK's models from the spec.
 To have a relevent example, the experiment provide the 3 events (`{subject}.{predicate}`) (2 on the same subject):
 
 - `artifact.published`
-- `artifact.deleted`
+- `artifact.deleted` (to have 2 on the same subject)
 - `taskrun.started`
+- (optional) `testcaserun.started` (to have 2 on the same predicate)
 
 ## Links
 
@@ -34,7 +35,7 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
   - example(s)
 - possible customization of templates/generation
 - generate only models
-- generation of cli/server for conformance/contract test
+- generation of cli/server for conformance/contract test ?
 
 ## Exploration's remarks
 
@@ -65,9 +66,9 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
 - use yaml format (less verbose than json, simpler for multi-line strings)
 - create a root `api.yaml` file without `path`, we focus on the `components` part (the models)
 - use of discriminator for subject/predicate
-- use `x-const` for constant values (like `const` in json schema) instead of `enum` with a single value
-- use `subject.type` to discriminate subjects and use the type of the event (aka `dev.events.{subject}.{predicate}`)
-  - Maybe to replace by the name of the component (that will simplify the code generation, no mapping needed)
+- 2 approaches for the models:
+  - `v4m` try to match v0.4.0 of spec (see [comments in cdevent.yaml.disable](openapi/spec/v4m/cdevent.yaml.disable))
+  - `v6` more freedom on the model (see [comments in cdevent.yaml](openapi/spec/v6/cdevent.yaml))
 - OpenAPI ecosystem provide lot of codegenerator (see [OpenAPI.Tools - an Open Source list of great tools for OpenAPI.](https://openapi.tools/#sdk)), we will focus on few that allow to use our own templates (and maybe extensions)
   - [x] [openapi-generator](https://openapi-generator.tech/)
     - java based
@@ -87,4 +88,45 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
     - I don't know how to use generate multiple files in some cases (eg. 1 file per type)
     - The internal model used by template doesn't expose all the information (title, ...)
     - Dereference looks a good idea but not to generate models, because it's not just an include and we lost title and additional info injected by our layout
+  - [ ] [Generator | AsyncAPI Initiative for event-driven APIs](https://www.asyncapi.com/tools/generator)
+    - javascript
+    - template packaged as npm package
+    - generate a full "client" (for messaging system)
+  - [ ] [Modelina | AsyncAPI Initiative for event-driven APIs](https://www.asyncapi.com/tools/modelina)
+    - javascript
+    - templating ?
   - comparison: [OpenAPI Generator vs Swagger Codegen v3: Which API Generator Is Best for Your Needs? - Engineer From Nepal](https://engineerfromnepal.com/blog/openapi-generator-vs-swagger-codegen-v3/), [FAQ: General | OpenAPI Generator](https://openapi-generator.tech/docs/faq/)
+
+### Conclusion & feelings (temporary)
+
+- no ready to use generator (yet) with zero configuration for markdown, java, python, rust, go,...
+- generated code is only a part of the SDK or spec'documentation
+- generating samples from the spec will require a dedicated tool and template (like [Schemathesis](https://schemathesis.readthedocs.io/en/stable/) or [Specmatic](https://specmatic.io/)) based on examples or random data (like in property-based testing) based on one 1 SDK
+- having a single entrypoint in spec (json schema maybe extractred from the spec) will make validation of examples, or message simpler for non-SDK users
+- TODO? custom (homemade) generator with minimal logic in the "generator" and more logic in the "template" (ala schematools)
+- TODO? invest more time (contribution?) in some of the tools (openapi-generator, schematools, codegen, modelina)
+- TODO? change the spec to be more like in programming languages
+- TODO? review all events => normalize, remove duplication, add missing fields, etc.
+- TODO? complementary linter to validate rules over the spec (naming convention, use of $ref, etc.): pkl, cuelang, opa... ?
+- should SDK includes integration with cloudevents, http frameworks, etc.?
+
+## Dev & Build
+
+- Use [mise (mise-en-place)](https://mise.jdx.dev/) to setup tools (java, task, ...)
+- Use [Taskfile](https://taskfile.dev/) to run actions (validate, codegen, docgen,...), installed by mise
+
+```sh
+❯ mise install
+❯ cd openapi
+❯ task --list
+task: Available tasks for this project:
+* codegen:                     Generate code from the spec (all languages)
+* openapi-generator-cli:       allow to call openapi-generator-cli directly by passing arguments after `--` (eg. `task openapi-generator-cli -- help`)
+* schematools-cli:             allow to call schematools directly by passing arguments after `--` (eg. `task schematools-cli -- --help`)
+* validate:                    Validate the spec
+* codegen:go:                  Generate code from the spec (go)
+* codegen:java:                Generate code from the spec (java)
+* codegen:markdown:            Generate code from the spec (markdown) <-- documentation
+* codegen:python:              Generate code from the spec (python)
+* codegen:rust:                Generate code from the spec (rust)
+```
