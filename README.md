@@ -120,10 +120,19 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
 
 ### Conclusion & feelings (temporary)
 
-- no ready to use generator (yet) with zero configuration for Markdown, Java, Python, Rust, Go, ...
+> [!CAUTION]
+> A breaking change with current spec, messages, SDK and existing ecosystem (could be a problem)
+
+- no ready to use generator (yet) with zero configuration for markdown, java, python, rust, go,...
 - generated code is only a part of the SDK or spec'documentation
 - generating samples from the spec will require a dedicated tool and template (like [Schemathesis](https://schemathesis.readthedocs.io/en/stable/) or [Specmatic](https://specmatic.io/)) based on examples or random data (like in property-based testing) based on one 1 SDK
-- having a single entrypoint in spec (json schema maybe extracted from the spec) will make validation of examples, or message simpler for non-SDK users
+- having a single entrypoint in spec (json schema maybe extractred from the spec) will make validation of examples, or message simpler for non-SDK users
+- generator MUST support templates, extensions, and scalar (string) specialisation:
+  - predifined templates are minimal (enough to do the job)
+  - to keep the quality of current SDK
+  - to keep compatibility with existing "primitive" type (eg. no "string" for id, uri, etc.)
+  - to allow annotation of generated structures
+- support of multiple spec versions could become a problem (if SDK want it)
 - TODO? custom (homemade) generator with minimal logic in the "generator" and more logic in the "template" (ala schematools)
 - TODO? invest more time (contribution?) in some of the tools (openapi-generator, schematools, codegen, modelina)
 - TODO? change the spec to be more like in programming languages
