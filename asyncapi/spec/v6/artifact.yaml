@@ -1,0 +1,33 @@
+Artifact:
+  title: Artifact
+  $id: Artifact
+  allOf:
+    - $ref: "cdevent.yaml#/Subject"
+    - type: object
+      additionalProperties: false
+      properties:
+        predicate:
+          $id: ArtifactPredicate
+          oneOf:
+            - $ref: "#/ArtifactPublished"
+            - $ref: "#/ArtifactDeleted"
+          discriminator:
+            kind
+            # mapping:
+            #   published: "ArtifactPublished"
+            #   deleted: "ArtifactDeleted"
+
+ArtifactPublished:
+  title: ArtifactPublished
+  $ref: "cdevent.yaml#/Predicate"
+
+ArtifactDeleted:
+  title: ArtifactDeleted
+  allOf:
+    - $ref: "cdevent.yaml#/Predicate"
+    - type: object
+      properties:
+        user:
+          type: string
+          minLength: 1
+      additionalProperties: false

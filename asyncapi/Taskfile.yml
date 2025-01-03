@@ -1,0 +1,97 @@
+version: "3"
+
+tasks:
+  modelina:download:
+    cmds:
+      - bun install # @asyncapi/cli @asyncapi/modelina
+
+  modelina:
+    internal: true
+    cmds:
+      - task: modelina:download
+      - bun run asyncapi generate models {{.ARGS}}
+    interactive: true
+
+  modelina-cli:
+    desc: allow to call modelina directly by passing arguments after `--` (eg. `task modelina-cli -- --help`)
+    cmds:
+      - task: modelina
+        vars:
+          ARGS: "{{ .CLI_ARGS }}"
+
+  modelina:generate:
+    internal: true
+    cmds:
+      # - rm -rf build/{{.LANG}}
+      - task: modelina
+        vars:
+          ARGS: "{{.LANG}} spec/asyncapi.yaml -o build/modelina/{{.LANG}} --log-diagnostics {{.ARGS}}"
+
+  # ----------------------------------------------------------------------------
+  ci:
+    cmds:
+      - task: validate
+      - task: codegen
+
+  validate:
+    desc: Validate the spec (asyncapi)
+    cmds:
+      - bun run asyncapi validate spec/asyncapi.yaml
+
+  codegen:
+    desc: Generate code from the spec (all languages)
+    cmds:
+      - task: codegen:java
+      - task: codegen:go
+      - task: codegen:markdown
+      - task: codegen:python
+      - task: codegen:rust
+
+  codegen:go:
+    desc: Generate code from the spec (go)
+    cmds:
+      - task: modelina:generate
+        vars:
+          LANG: golang
+          ARGS: "--packageName=cdevents"
+
+  codegen:java:
+    desc: Generate code from the spec (java)
+    cmds:
+      - task: modelina:generate
+        vars:
+          LANG: java
+          ARGS: "--packageName=cdevents --javaIncludeComments --javaConstraints --javaJackson"
+
+  codegen:markdown:
+    desc: Generate code from the spec (markdown) <-- documentation
+    cmds:
+      # v1.2.1
+      # Version "3.0.0" is not supported. Please use "2.6.0" (latest) version of the specification. in path [] starting L1 C0, ending L20 C40
+      # Diagnostic err: Unknown schema format: "application/vnd.aai.asyncapi;version=3.0.0" in path ["components","messages","cdevents"] starting L18 C13, ending L20 C40
+      # Diagnostic err: Cannot validate and parse given schema due to unknown schema format: "application/vnd.aai.asyncapi;version=3.0.0" in path ["components","messages","cdevents","payload"] starting L19 C14, ending L20 C40
+      # Generator Error: Input is not a correct AsyncAPI document so it cannot be processed.
+      #
+      # v1.6.6
+      # Generator Error: Your schema contains $ref. You must provide full specification in the third parameter.
+      - bun run asyncapi generate fromTemplate spec/asyncapi.yaml @asyncapi/markdown-template@1.6.6 --output build/fromTemplate/markdown --install
+
+  codegen:python:
+    desc: Generate code from the spec (python)
+    cmds:
+      - task: modelina:generate
+        vars:
+          LANG: python
+          ARGS: "--pyDantic"
+
+  codegen:rust:
+    desc: Generate code from the spec (rust)
+    cmds:
+      - task: modelina:generate
+        vars:
+          LANG: rust
+
+  codegen:rust-custom:
+    desc: Generate code from the spec (rust) via rust.ts
+    cmds:
+      - bun run rust

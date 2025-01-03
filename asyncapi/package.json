@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@asyncapi/cli": "^2.14.1",
+    "@asyncapi/generator": "^2.5.0",
+    "@asyncapi/modelina": "^3.10.0",
+    "js-yaml": "^4.1.0"
+  }
+}

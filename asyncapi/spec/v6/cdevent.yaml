@@ -1,0 +1,291 @@
+# In this file, we start from spec 0.4 but try to be more like the documentation spec
+# and to translate it into doc & sdk with some changes:
+# - one type per subject
+# - one type per predicate
+# - remove of the subject.content, replace by subject.predicate
+# - the list of predicates per subject
+# - `examples` follow the format of https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.9.5 (that is different from openapi's operation)
+# - `x-stage` is used to indicate the stage of the subject (and the predicates):
+#   core, source-code-version-control, continuous-integration, testing,
+#   continuous-deployment, continuous-operations
+# - rename `type` to `kind` because `type` is a reserved word in lot of languages?
+#   (on an other side if `type` is used only as discriminator (too tag enum)
+#   maybe it could be removed from the generated structures)
+# - for name of subject'subtype, only the first letter is capitalized (not a PascalCase)
+# - for name of predicate, concatenate the subject'subtype and the predicate'subtype with predicate subtype capitalized, then
+#   - predicate & subject could extracted without ambiguity (to snake_case + split on '_')
+#   - no conflict between predicate that could have the same name (eg. started, finished) but different subject'subtype
+# - rename `url` to `uri` (to be consistent in every place and with the type'name)
+
+CDEvent:
+  title: CDEvent
+  $id: CDEvent
+  type: object
+  description: |
+    CDEvents is a common specification for Continuous Delivery events.
+
+    An "event" is a data record expressing an occurrence and its context. Events are
+    routed from an event producer (the source) to interested event consumers. The
+    routing can be performed based on information contained in the event, but an
+    event will not identify a specific routing destination.
+  additionalProperties: false
+  required:
+    - context
+    - subject
+  # dependentRequired:
+  #   customDataContentType: [customData]
+  properties:
+    context:
+      $ref: "#/Context"
+    subject:
+      $id: Subject
+      oneOf:
+        - $ref: "artifact.yaml#/Artifact"
+        - $ref: "taskrun.yaml#/Taskrun"
+        - $ref: "testcaserun.yaml#/Testcaserun"
+      discriminator: kind
+    # customData:
+    #   $ref: "#/CustomData"
+    #   description: |
+    #     The `customData` and `customDataContentType` fields can be used to carry additional data in CDEvents.
+    customDataContentType:
+      $ref: "#/CustomDataContentType"
+
+Context:
+  title: Context
+  $id: Context
+  type: object
+  # description:
+  examples:
+    - version: "0.5.0-draft"
+      id: "A234-1234-1234"
+      source: "/staging/tekton/"
+      timestamp: "2018-04-05T17:31:00Z"
+      schemaUri: "https://myorg.com/cdevents/schema/taskrun-started-1-1-0"
+  additionalProperties: false
+  required:
+    - version
+    - id
+    - source
+    - timestamp
+  properties:
+    version:
+      $ref: "#/Version"
+      description: |
+        The version of the CDEvents specification which the event
+        uses. This enables the interpretation of the context. Compliant event
+        producers MUST use a value of `0.1.1` when referring to this version of the
+        specification. For more details see [versioning](https://cdevents.dev/docs/primer/#versioning).
+    id:
+      $ref: "#/Id"
+      description: |
+        Identifier for an event.
+        Subsequent delivery attempts of the same event MAY share the same
+        [`id`](#id-context). This attribute matches the syntax and semantics of the
+        [`id`](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#id)
+        attribute of CloudEvents.
+    source:
+      $ref: "#/Source"
+      description: |
+        defines the context in which an event happened. The main purpose
+        of the source is to provide global uniqueness for [`source`](#source-context) +
+        [`id`](#id-context).
+
+        The source MAY identify a single producer or a group of producer that belong
+        to the same application.
+
+        When selecting the format for the source, it may be useful to think about how
+        clients may use it. Using the [root use cases](https://cdevents.dev/docs/primer/#use-cases) as
+        reference:
+
+        - A client may want to react only to events sent by a specific service, like
+          the instance of Tekton that runs in a specific cluster or the instance of
+          Jenkins managed by team X
+        - A client may want to collate all events coming from a specific source for
+          monitoring, observability or visualization purposes
+    timestamp:
+      $ref: "#/Timestamp"
+      description: |
+        defines the time of the occurrence. When the time of the
+        occurrence is not available, the time when the event was produced MAY be used.
+
+        In case the transport layer should require a re-transmission of the event,
+        the timestamp SHOULD NOT be updated, i.e. it should be the same for the same
+        [`source`](#source-context) + [`id`](#id-context) combination.
+
+    schemaUri:
+      # TODO to remove ? (useless in this context)
+      type: string
+      minLength: 1
+      format: uri
+    chainId:
+      type: string
+      minLength: 1
+
+Subject:
+  type: object
+  description: |
+    The "subject" is the entity with which the occurrence in a software system
+    is concerned. For instance when a software build is started, the build is the
+    subject of the occurrence, or when a service is deployed, the subject is the
+    service. Subjects belong to two main categories:
+
+    - long running, which stay in a running state until they're purposely stopped or
+      encounter a failure or a condition that prevents them from running - for
+      example a service, an environment, an artifact or a source change
+    - run to completion, which independently stop after they accomplished (or
+      failed to) a specific task, or encounter a failure or a condition that
+      prevents them from continuing - for example a task run, a build or a test
+  required:
+    - id
+    - kind
+    - predicate
+  properties:
+    kind:
+      type: string
+      readOnly: true
+    id:
+      $ref: "#/Id"
+      description: |
+        Identifier for a subject.
+        Subsequent events associated to the same subject MUST use the same subject
+        [`id`](#id-subject).
+      examples:
+        - tenant1/12345-abcde
+        - namespace/pipelinerun-1234
+    source:
+      $ref: "#/Source"
+      description: |
+        defines the context in which the subject originated. In most
+        cases the [`source`](#source-subject) of the subject matches the
+        [`source`](#source-context) of the event. This field should be used only in
+        cases where the [`source`](#source-subject) of the *subject* is different from
+        the [`source`](#source-context) of the event.
+
+        The format and semantic of the *subject* [`source`](#source-subject) are the
+        same of those of the *context* [`source`](#source-context).
+    predicate:
+      $ref: "#/Predicate"
+
+Predicate:
+  description: |
+    A "predicate" is what happened to a subject in an occurrence.
+    For instance in case of a software build, started is a valid predicate in the
+    occurrence, or in case of a service, deployed in a valid predicate.
+  type: object
+  required:
+    - kind
+  properties:
+    kind:
+      type: string
+      readOnly: true
+
+CustomData:
+  title: CustomData
+  $id: CustomData
+  # description: |
+  #   custom data. The content of the `customData` field is not
+  #   specified in CDEvent and typically require tool specific knowledge
+  #   to be parsed.
+  oneOf:
+    - type: object
+      # description: |
+      #   This specification does not place any restriction on the type of this information.
+      # examples:
+      #   - mydata1:
+      #       f1: v1
+      #       f2: v2
+      #     mydata2: myvalue2
+    - type: string
+      x-contentEncoding: base64
+      # description: |
+      #   Content of customData is base64 encoded
+      # examples:
+      #   - "PGRhdGE+VkdobElIWnZZMkZpZFd4aGNua2daR1ZtYVc1bGN5QXFaWFpsYm5RZ2RIbHdaWE1xTENCM2FHbGphQ0JoY21VZ2JXRmtaU0J2WmlBcWMzVmlhbVZqZEhNcUNnPT08L2RhdGE+Cg=="
+
+CustomDataContentType:
+  title: CustomDataContentType
+  $id: CustomDataContentType
+  type: string
+  description: |
+    Content type of `customData` value. This attribute enables data
+    to carry any type of content, whereby format and encoding might differ from
+    that of the chosen event format. For example, an event rendered using the
+    [CloudEvents](cloudevents-binding.md) format might carry an XML payload in
+    data, and the consumer is informed by this attribute being set to
+    "application/xml". The rules for how data content is rendered for different
+    `customDataContentType` values are defined in the specific binding
+    specification
+  examples:
+    - application/xml
+  default: application/json
+
+EntityRef:
+  title: EntityRef
+  description: |
+    A reference to an entity. Could be used to reference a subject in another
+    context (for example in a different event, predicate), an environment,...
+  type: object
+  properties:
+    id:
+      $ref: "cdevent.yaml#/Id"
+    source:
+      $ref: "cdevent.yaml#/Source"
+  additionalProperties: false
+  required:
+    - id
+
+Timestamp:
+  type: string
+  description: |
+    Scalar string in the format specified in [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339)
+  format: date-time
+
+Version:
+  title: Version
+  $id: Version
+  type: string
+  pattern: '\d+\.\d+\.\d+(-.*)?'
+  examples:
+    - "0.4.0"
+    - "0.5.0-draft"
+
+Id:
+  title: Id
+  type: string
+  examples:
+    - tenant1/12345-abcde
+  minLength: 1
+
+Source:
+  title: Source
+  $id: Source
+  type: string
+  examples:
+    - /tekton
+    - https://www.jenkins.io/
+    - /cloud1/spinnaker-A
+    - /cluster2/keptn-A
+    - /teamX/knative-1
+  minLength: 1
+  format: uri-reference
+
+UriReference:
+  title: UriReference
+  $id: UriReference
+  type: string
+  format: uri-reference
+
+Uri:
+  type: string
+  format: uri
+
+Purl:
+  title: Purl
+  $id: Purl
+  type: string
+  description: |
+    a string in [package-url][purl-spec] format
+  examples:
+    - pkg:pypi/django@1.11
+  format: uri

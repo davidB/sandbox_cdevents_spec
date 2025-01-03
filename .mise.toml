@@ -1,3 +1,4 @@
 [tools]
 task = "3"
 java = "21"
+bun = "latest" # alternative to nodejs

@@ -1,0 +1,32 @@
+Taskrun:
+  x-stage: core
+  title: Taskrun
+  allOf:
+    - $ref: "cdevent.yaml#/Subject"
+    - type: object
+      additionalProperties: false
+      properties:
+        predicate:
+          $id: TaskrunPredicate
+          oneOf:
+            - $ref: "#/TaskrunStarted"
+          discriminator:
+            kind
+            # mapping is not supported yet by generator (rust)
+            # mapping:
+            #   # started: "#/TaskrunStarted"
+            #   # started: "TaskrunStarted"
+
+TaskrunStarted:
+  title: TaskrunStarted
+  allOf:
+    - $ref: "cdevent.yaml#/Predicate"
+    - type: object
+      additionalProperties: false
+      properties:
+        taskName:
+          type: string
+        uri:
+          $ref: "cdevent.yaml#/Uri"
+        pipelineRun:
+          $ref: "cdevent.yaml#/EntityRef"

@@ -1,0 +1,20 @@
+asyncapi: 3.0.0
+info:
+  title: CDEvents
+  version: 0.6.0
+  # syntax for discriminator is not like openapi (string vs object)
+channels:
+  cdevents:
+    messages:
+      cdevents:
+        $ref: "#/components/messages/cdevents"
+operations:
+  cdevents:
+    action: send
+    channel:
+      $ref: "#/channels/cdevents"
+components:
+  messages:
+    cdevents:
+      payload:
+        $ref: "v6/cdevent.yaml#/CDEvent"

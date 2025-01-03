@@ -1,0 +1,79 @@
+Testcaserun:
+  x-stage: testing
+  title: Testcaserun
+  allOf:
+    - $ref: "cdevent.yaml#/Subject"
+    - type: object
+      additionalProperties: false
+      properties:
+        predicate:
+          $id: TestcaserunPredicate
+          oneOf:
+            - $ref: "#/TestcaserunStarted"
+          discriminator: kind
+
+TestcaserunStarted:
+  title: TestcaserunStarted
+  allOf:
+    - $ref: "cdevent.yaml#/Predicate"
+    - type: object
+      additionalProperties: false
+      required:
+        - environment
+      properties:
+        trigger:
+          $ref: "#/Trigger"
+        environment:
+          $ref: "cdevent.yaml#/EntityRef"
+        testSuiteRun:
+          $ref: "cdevent.yaml#/EntityRef"
+        testCase:
+          $ref: "#/Testcase"
+
+Trigger:
+  title: Trigger
+  type: object
+  properties:
+    kind:
+      $ref: "#/TriggerKind"
+    uri:
+      $ref: "cdevent.yaml#/Uri"
+
+TriggerKind:
+  title: TriggerKind
+  type: string
+  enum:
+    - manual
+    - pipeline
+    - event
+    - schedule
+    - other
+
+Testcase:
+  title: Testcase
+  type: object
+  additionalProperties: false
+  required:
+    - id
+  properties:
+    id:
+      $ref: "cdevent.yaml#/Id"
+    version:
+      # TODO use the type "cdevent.yaml#/Version"
+      type: string
+    name:
+      type: string
+    kind:
+      title: TestcaseKind
+      type: string
+      enum:
+        - performance
+        - functional
+        - unit
+        - security
+        - compliance
+        - integration
+        - e2e
+        - other
+    uri:
+      $ref: "cdevent.yaml#/Uri"
