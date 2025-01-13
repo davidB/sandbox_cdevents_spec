@@ -1,6 +1,6 @@
 Taskrun:
   x-stage: core
-  title: Taskrun
+  $id: Taskrun
   allOf:
     - $ref: "cdevent.yaml#/Subject"
     - type: object
@@ -18,7 +18,7 @@ Taskrun:
             #   # started: "TaskrunStarted"
 
 TaskrunStarted:
-  title: TaskrunStarted
+  $id: TaskrunStarted
   allOf:
     - $ref: "cdevent.yaml#/Predicate"
     - type: object

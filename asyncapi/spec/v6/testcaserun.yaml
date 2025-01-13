@@ -1,6 +1,6 @@
 Testcaserun:
   x-stage: testing
-  title: Testcaserun
+  $id: Testcaserun
   allOf:
     - $ref: "cdevent.yaml#/Subject"
     - type: object
@@ -13,7 +13,7 @@ Testcaserun:
           discriminator: kind
 
 TestcaserunStarted:
-  title: TestcaserunStarted
+  $id: TestcaserunStarted
   allOf:
     - $ref: "cdevent.yaml#/Predicate"
     - type: object
@@ -31,7 +31,7 @@ TestcaserunStarted:
           $ref: "#/Testcase"
 
 Trigger:
-  title: Trigger
+  $id: Trigger
   type: object
   properties:
     kind:
@@ -40,7 +40,7 @@ Trigger:
       $ref: "cdevent.yaml#/Uri"
 
 TriggerKind:
-  title: TriggerKind
+  $id: TriggerKind
   type: string
   enum:
     - manual
@@ -50,7 +50,7 @@ TriggerKind:
     - other
 
 Testcase:
-  title: Testcase
+  $id: Testcase
   type: object
   additionalProperties: false
   required:

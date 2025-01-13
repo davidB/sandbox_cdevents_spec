@@ -16,9 +16,9 @@
 #   - predicate & subject could extracted without ambiguity (to snake_case + split on '_')
 #   - no conflict between predicate that could have the same name (eg. started, finished) but different subject'subtype
 # - rename `url` to `uri` (to be consistent in every place and with the type'name)
+# - `$id` should be the same as the type name (like `title` in openapi, buy it is not used here)
 
 CDEvent:
-  title: CDEvent
   $id: CDEvent
   type: object
   description: |
@@ -52,7 +52,6 @@ CDEvent:
       $ref: "#/CustomDataContentType"
 
 Context:
-  title: Context
   $id: Context
   type: object
   # description:
@@ -181,7 +180,6 @@ Predicate:
       readOnly: true
 
 CustomData:
-  title: CustomData
   $id: CustomData
   # description: |
   #   custom data. The content of the `customData` field is not
@@ -204,7 +202,6 @@ CustomData:
       #   - "PGRhdGE+VkdobElIWnZZMkZpZFd4aGNua2daR1ZtYVc1bGN5QXFaWFpsYm5RZ2RIbHdaWE1xTENCM2FHbGphQ0JoY21VZ2JXRmtaU0J2WmlBcWMzVmlhbVZqZEhNcUNnPT08L2RhdGE+Cg=="
 
 CustomDataContentType:
-  title: CustomDataContentType
   $id: CustomDataContentType
   type: string
   description: |
@@ -221,7 +218,7 @@ CustomDataContentType:
   default: application/json
 
 EntityRef:
-  title: EntityRef
+  $id: EntityRef
   description: |
     A reference to an entity. Could be used to reference a subject in another
     context (for example in a different event, predicate), an environment,...
@@ -236,13 +233,13 @@ EntityRef:
     - id
 
 Timestamp:
+  $id: Timestamp
   type: string
   description: |
     Scalar string in the format specified in [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339)
   format: date-time
 
 Version:
-  title: Version
   $id: Version
   type: string
   pattern: '\d+\.\d+\.\d+(-.*)?'
@@ -251,14 +248,13 @@ Version:
     - "0.5.0-draft"
 
 Id:
-  title: Id
+  $id: Id
   type: string
   examples:
     - tenant1/12345-abcde
   minLength: 1
 
 Source:
-  title: Source
   $id: Source
   type: string
   examples:
@@ -271,17 +267,16 @@ Source:
   format: uri-reference
 
 UriReference:
-  title: UriReference
   $id: UriReference
   type: string
   format: uri-reference
 
 Uri:
+  $id: Uri
   type: string
   format: uri
 
 Purl:
-  title: Purl
   $id: Purl
   type: string
   description: |

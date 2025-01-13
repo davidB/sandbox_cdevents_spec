@@ -1,5 +1,4 @@
 Artifact:
-  title: Artifact
   $id: Artifact
   allOf:
     - $ref: "cdevent.yaml#/Subject"
@@ -18,11 +17,11 @@ Artifact:
             #   deleted: "ArtifactDeleted"
 
 ArtifactPublished:
-  title: ArtifactPublished
+  $id: ArtifactPublished
   $ref: "cdevent.yaml#/Predicate"
 
 ArtifactDeleted:
-  title: ArtifactDeleted
+  $id: ArtifactDeleted
   allOf:
     - $ref: "cdevent.yaml#/Predicate"
     - type: object
