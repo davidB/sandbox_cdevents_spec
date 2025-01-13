@@ -1,0 +1,16 @@
+{
+  "name": "rust-template",
+  "version": "0.1.0",
+  "description": "Rust template of CDEvents for the AsyncAPI generator.",
+  "keywords": [
+    "asyncapi",
+    "generator",
+    "rust",
+    "template"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@asyncapi/modelina": "^3.10.0",
+    "js-yaml": "^4.1.0"
+  }
+}

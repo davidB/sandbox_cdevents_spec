@@ -74,7 +74,9 @@ tasks:
       #
       # v1.6.6
       # Generator Error: Your schema contains $ref. You must provide full specification in the third parameter.
-      - bun run asyncapi generate fromTemplate spec/asyncapi.yaml @asyncapi/markdown-template@1.6.6 --output build/fromTemplate/markdown --install
+      # - bun run asyncapi generate fromTemplate spec/asyncapi.yaml @asyncapi/markdown-template@1.6.6 --output build/fromTemplate/markdown --install
+      - rm -rf build/fromTemplate/markdown
+      - bun run asyncapi generate fromTemplate spec/asyncapi.yaml ./templates/markdown --output build/fromTemplate/markdown
 
   codegen:python:
     desc: Generate code from the spec (python)
@@ -93,5 +95,7 @@ tasks:
 
   codegen:rust-custom:
     desc: Generate code from the spec (rust) via rust.ts
+    dir: templates/rust
     cmds:
-      - bun run rust
+      - bun install
+      - bun run rust.ts

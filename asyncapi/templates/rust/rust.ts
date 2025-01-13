@@ -10,7 +10,7 @@ import yaml from "js-yaml";
 import * as path from "path";
 
 // change the working directory to allow the resolution of relative paths in yaml
-process.chdir("spec");
+process.chdir("../../spec");
 const doc = yaml.load(fs.readFileSync("asyncapi.yaml", "utf8"));
 //console.log(doc);
 
