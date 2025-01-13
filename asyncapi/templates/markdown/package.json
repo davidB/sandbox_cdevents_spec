@@ -1,0 +1,21 @@
+{
+  "name": "markdown-template",
+  "version": "0.1.0",
+  "description": "Markdown template of CDEvents for the AsyncAPI generator.",
+  "keywords": [
+    "asyncapi",
+    "generator",
+    "markdown",
+    "template"
+  ],
+  "license": "Apache-2.0",
+  "generator": {
+    "renderer": "react",
+    "generator": ">=1.17.0 <2.0.0",
+    "apiVersion": "v3"
+  },
+  "dependencies": {
+    "@asyncapi/generator-react-sdk": "^1.1",
+    "@asyncapi/modelina": "^3.10.0"
+  }
+}
