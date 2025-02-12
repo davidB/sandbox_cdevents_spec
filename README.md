@@ -95,6 +95,8 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
   - [ ] [Modelina | AsyncAPI Initiative for event-driven APIs](https://www.asyncapi.com/tools/modelina)
     - javascript
     - templating ?
+  - comparaison: [OpenAPI Generator vs Swagger Codegen v3: Which API Generator Is Best for Your Needs? - Engineer From Nepal](https://engineerfromnepal.com/blog/openapi-generator-vs-swagger-codegen-v3/), [FAQ: General | OpenAPI Generator](https://openapi-generator.tech/docs/faq/)
+
 ### Smithy
 
 [Smithy](https://smithy.io/2.0/index.html) is designed to create API for Resources oriented API (ala REST): resources definition and associated operations / lifecycles.
@@ -111,16 +113,16 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
 
 ### Conclusion & feelings (temporary)
 
-- no ready to use generator (yet) with zero configuration for markdown, java, python, rust, go,...
+- no ready to use generator (yet) with zero configuration for Markdown, Java, Python, Rust, Go, ...
 - generated code is only a part of the SDK or spec'documentation
 - generating samples from the spec will require a dedicated tool and template (like [Schemathesis](https://schemathesis.readthedocs.io/en/stable/) or [Specmatic](https://specmatic.io/)) based on examples or random data (like in property-based testing) based on one 1 SDK
-- having a single entrypoint in spec (json schema maybe extractred from the spec) will make validation of examples, or message simpler for non-SDK users
+- having a single entrypoint in spec (json schema maybe extracted from the spec) will make validation of examples, or message simpler for non-SDK users
 - TODO? custom (homemade) generator with minimal logic in the "generator" and more logic in the "template" (ala schematools)
 - TODO? invest more time (contribution?) in some of the tools (openapi-generator, schematools, codegen, modelina)
 - TODO? change the spec to be more like in programming languages
 - TODO? review all events => normalize, remove duplication, add missing fields, etc.
 - TODO? complementary linter to validate rules over the spec (naming convention, use of $ref, etc.): pkl, cuelang, opa... ?
-- should SDK includes integration with cloudevents, http frameworks, etc.?
+- should SDK includes integration with CloudEvents, http frameworks, etc.?
 
 ## Dev & Build
 
