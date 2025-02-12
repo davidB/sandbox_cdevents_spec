@@ -1,18 +1,7 @@
 //copy from https://github.com/asyncapi/markdown-template/blob/master/components/Schema.js
 import { Text } from "@asyncapi/generator-react-sdk";
 
-import { Header, TableHead, TableRow } from "./common";
-
-import { SchemaHelpers } from "../helpers/schema";
-
-const headers = [
-  "Name",
-  "Type",
-  "Description",
-  "Value",
-  "Constraints",
-  "Notes",
-];
+import { CodeBlock, Expandable, Header, ListItem } from "./common";
 
 // eslint-disable-next-line no-unused-vars
 import { SchemaInterface } from "@asyncapi/parser";
@@ -20,365 +9,120 @@ import { SchemaInterface } from "@asyncapi/parser";
 /**
  * @param {{schema: SchemaInterface}} param0
  */
-export function Schema({ schema }) {
+export function Schema({ schema, headerBaseLevel = 1 }) {
   return (
     <Text>
-      <Header type={4}>{schema.id()}</Header>
+      <Header type={headerBaseLevel}>{extractTypeName(schema)}</Header>
       <Text newLines={2}>{extractDescription(schema)}</Text>
-      <TableHead headers={headers} />
-      <SchemaContent schema={schema} schemaName="" />
+
+      <SchemaPropertiesSection
+        schema={schema}
+        headerBaseLevel={headerBaseLevel + 1}
+      />
+      <SchemaExamplesSection
+        schema={schema}
+        headerBaseLevel={headerBaseLevel + 1}
+      />
     </Text>
   );
 }
 
-function SchemaContent({ schema, schemaName, path = "" }) {
-  const dependentSchemas = SchemaHelpers.getDependentSchemas(schema);
-  const extensions = SchemaHelpers.getCustomExtensions(schema);
-  const extensionsSchema =
-    extensions || Object.keys(extensions).length
-      ? SchemaHelpers.jsonToSchema(extensions)
-      : null;
-
+/**
+ * Display the properties
+ * @param {{schema: SchemaInterface, headerBaseLevel: number}} param0
+ */
+function SchemaPropertiesSection({ schema, headerBaseLevel = 1 }) {
+  if (schema.type() != "object") {
+    return;
+  }
   return (
-    <>
-      <SchemaProperties schema={schema} schemaName={schemaName} path={path} />
-      {"---\n"}
-      <SchemaItems schema={schema} schemaName={schemaName} path={path} />
-      {"---\n"}
-      {schema.oneOf() &&
-        schema
-          .oneOf()
-          .map((s, idx) => (
-            <SchemaPropRow
-              schema={s}
-              schemaName={idx}
-              path={buildPath(path || schemaName, idx)}
-              nameNote="oneOf item"
-              key={idx}
-            />
-          ))}
-      {"---\n"}
-      {schema.anyOf() &&
-        schema
-          .anyOf()
-          .map((s, idx) => (
-            <SchemaPropRow
-              schema={s}
-              schemaName={idx}
-              path={buildPath(path || schemaName, idx)}
-              nameNote="anyOf item"
-              key={idx}
-            />
-          ))}
-      {"---\n"}
-      {schema.allOf() &&
-        schema
-          .allOf()
-          .map((s, idx) => (
-            <SchemaPropRow
-              schema={s}
-              schemaName={idx}
-              path={buildPath(path || schemaName, idx)}
-              nameNote="allOf item"
-              key={idx}
-            />
-          ))}
-      {"---\n"}
-      {schema.not() && (
-        <SchemaPropRow
-          schema={schema.not()}
-          path={path}
-          nameNote="not"
-          tryRenderAdditionalNotes={false}
-        />
-      )}
-      {"---\n"}
-      {schema.propertyNames() && (
-        <SchemaPropRow
-          schema={schema.propertyNames()}
-          path={path}
-          nameNote="property names"
-          tryRenderAdditionalNotes={false}
-        />
-      )}
-      {"---\n"}
-      {schema.contains() && (
-        <SchemaPropRow
-          schema={schema.contains()}
-          path={path}
-          nameNote="contains"
-          tryRenderAdditionalNotes={false}
-        />
-      )}
-      {"---\n"}
-      {schema.if() && (
-        <SchemaPropRow
-          schema={schema.if()}
-          path={path}
-          nameNote="if"
-          tryRenderAdditionalNotes={false}
-        />
-      )}
-      {"---\n"}
-      {schema.then() && (
-        <SchemaPropRow
-          schema={schema.then()}
-          path={path}
-          nameNote="then"
-          tryRenderAdditionalNotes={false}
-        />
-      )}
-      {"---\n"}
-      {schema.else() && (
-        <SchemaPropRow
-          schema={schema.else()}
-          path={path}
-          nameNote="else"
-          tryRenderAdditionalNotes={false}
-        />
-      )}
-      {"---\n"}
-      {dependentSchemas && (
-        <SchemaPropRow
-          schema={dependentSchemas}
-          path={path}
-          nameNote="dependant schemas"
-        />
-      )}
-      {"---\n"}
-      {extensionsSchema && (
-        <SchemaProperties schema={extensionsSchema} path={path} />
-      )}
-      {"---\n"}
-      <SchemaAdditionalProperties schema={schema} path={path} />
-      {"---\n"}
-      <SchemaAdditionalItems schema={schema} path={path} />
-    </>
-  );
-}
-
-function SchemaProperties({ schema, schemaName, path }) {
-  const properties = schema.properties() || {};
-  if (!Object.keys(properties)) {
-    return null;
-  }
-
-  const required = schema.required() || [];
-  const patternProperties = schema.patternProperties() || {};
-
-  return (
-    <>
-      {Object.entries(properties).map(([propertyName, property]) => (
-        <SchemaPropRow
-          schema={property}
-          schemaName={propertyName}
-          path={buildPath(path || schemaName, propertyName)}
-          required={required.includes(propertyName)}
-          dependentRequired={SchemaHelpers.getDependentRequired(
-            propertyName,
-            schema
-          )}
-          key={propertyName}
-        />
-      ))}
-      {Object.entries(patternProperties).map(([propertyName, property]) => (
-        <SchemaPropRow
-          schema={property}
-          schemaName={propertyName}
-          path={buildPath(path || schemaName, propertyName)}
-          nameNote="pattern property"
-          key={propertyName}
-        />
-      ))}
-    </>
-  );
-}
-
-function SchemaAdditionalProperties({ schema, path }) {
-  const extensions = schema.extensions();
-  if (
-    extensions.get(SchemaHelpers.extRenderAdditionalInfo)?.value() === false
-  ) {
-    return null;
-  }
-
-  const type = schema.type();
-  const types = Array.isArray(type) ? type : [type];
-  if (type !== undefined && !types.includes("object")) {
-    return null;
-  }
-
-  const additionalProperties = schema.additionalProperties();
-  if (
-    additionalProperties === true ||
-    additionalProperties === undefined ||
-    additionalProperties === false
-  ) {
-    return null;
-  }
-
-  return (
-    <SchemaPropRow
-      schema={additionalProperties}
-      path={path}
-      nameNote="additional properties"
-      tryRenderAdditionalNotes={false}
-    />
-  );
-}
-
-function SchemaItems({ schema, schemaName, path }) {
-  const type = schema.type();
-  const types = Array.isArray(type) ? type : [type];
-  if (type !== undefined && !types.includes("array")) {
-    return null;
-  }
-  const items = schema.items();
-
-  // object in items
-  if (
-    items &&
-    !Array.isArray(items) &&
-    Object.keys(items.properties() || {}).length
-  ) {
-    return (
-      <SchemaProperties schema={items} path={path} nameNote="single item" />
-    );
-  } else if (Array.isArray(items)) {
-    return items.map((item, idx) => (
-      <SchemaPropRow
-        schema={item}
-        path={buildPath(path || schemaName, idx)}
-        key={idx}
-        nameNote="index"
-      />
-    ));
-  }
-  return <SchemaPropRow schema={items} path={path} nameNote="single item" />;
-}
-
-function SchemaAdditionalItems({ schema, path }) {
-  const extensions = schema.extensions();
-  if (
-    extensions.get(SchemaHelpers.extRenderAdditionalInfo)?.value() === false
-  ) {
-    return null;
-  }
-
-  const type = schema.type();
-  const types = Array.isArray(type) ? type : [type];
-  if (type !== undefined && !types.includes("array")) {
-    return null;
-  }
-  if (!Array.isArray(schema.items())) {
-    return null;
-  }
-
-  const additionalItems = schema.additionalItems();
-  if (
-    additionalItems === true ||
-    additionalItems === undefined ||
-    additionalItems === false
-  ) {
-    return null;
-  }
-
-  return (
-    <SchemaPropRow
-      schema={additionalItems}
-      path={path}
-      nameNote="additional items"
-      tryRenderAdditionalNotes={false}
-    />
-  );
-}
-
-function SchemaPropRow({
-  schema,
-  schemaName,
-  required = false,
-  dependentRequired = [],
-  path = "",
-  nameNote = "",
-  tryRenderAdditionalNotes = true,
-}) {
-  if (
-    !schema ||
-    (typeof schemaName === "string" &&
-      (schemaName.startsWith("x-parser-") ||
-        schemaName.startsWith("x-schema-private-")))
-  ) {
-    return null;
-  }
-
-  const isCircular = schema.isCircular() || false;
-  const extensions = schema.extensions();
-  const renderType =
-    extensions.get(SchemaHelpers.extRenderType)?.value() !== false;
-  const rawValue = extensions.get(SchemaHelpers.extRawValue)?.value() === true;
-
-  const name = tree(path) || schemaName;
-  const schemaType = renderType && SchemaHelpers.toSchemaType(schema);
-
-  description = extractSummary(schema);
-
-  const values = rawValue
-    ? `\`${SchemaHelpers.prettifyValue(schema.const())}\``
-    : schemaValues(schema);
-  const constraints = schemaConstraints(schema);
-  const notes = schemaNotes({
-    schema,
-    required,
-    dependentRequired,
-    isCircular,
-    tryRenderAdditionalNotes,
-  });
-
-  let renderedName = "";
-  if (nameNote) {
-    renderedName = name ? `${name} (${nameNote})` : `(${nameNote})`;
-  } else {
-    renderedName = name;
-  }
-
-  const rowRenderer = () => [
-    renderedName || "-",
-    schemaType || "-",
-    description || "-",
-    values || "-",
-    constraints || "-",
-    notes || "-",
-  ];
-
-  if (
-    nameNote === "root" &&
-    (!schemaType || schemaType === "object" || schemaType === "array") &&
-    !description &&
-    !values &&
-    !constraints &&
-    !notes
-  ) {
-    return null;
-  }
-
-  return (
-    <>
-      <TableRow rowRenderer={rowRenderer} entry={schema} />
-      {isCircular === false && nameNote !== "root" && (
-        <SchemaContent schema={schema} schemaName={schemaName} path={path} />
-      )}
-    </>
+    <Text>
+      <Header type={headerBaseLevel}>Properties</Header>
+      {Object.entries(schema.properties()).map((property) => {
+        //console.log(property[0]); // propertyName
+        //console.log(property[1]); // propertySchema
+        return <SchemaPropertyItem schema={property[1]} name={property[0]} />;
+      })}
+    </Text>
   );
 }
 
 /**
- * @param SchemaInterface schema
+ * Display the a single property definition
+ * @param {{schema: SchemaInterface, name: string, indentation: number}} param0
  */
-function extractDescription(schema) {
-  let description = (schema.description() || "").replace(
-    new RegExp("S*\r?\n", "g"),
-    " "
+function SchemaPropertyItem({ schema, name, indentation = 0 }) {
+  return (
+    <Expandable title={`<strong>${name}</strong>`} indentation={indentation}>
+      <Text />
+      <ListItem>Type: {extractTypeName(schema)}</ListItem>
+      <ListItem>Description: {extractDescription(schema)}</ListItem>
+      <ListItem>Constraints: ?</ListItem>
+      <ListItem>
+        Examples: <SchemaExamplesList schema={schema} />
+      </ListItem>
+    </Expandable>
   );
+}
+
+/**
+ * Display the examples
+ * Could be used a subpart of schema or properties.
+ * @param {{schema: SchemaInterface, name: string, indentation: number}} param0
+ */
+
+function SchemaExamplesSection({ schema, headerBaseLevel = 1 }) {
+  if (!schema.examples() && !schema.default()) {
+    return;
+  }
+  return (
+    <Text>
+      <Header type={headerBaseLevel}>Examples</Header>
+      <SchemaExamplesList schema={schema} />
+    </Text>
+  );
+}
+
+/**
+ * Display the examples
+ * Could be used a subpart of schema or properties.
+ * @param {{schema: SchemaInterface, name: string, indentation: number}} param0
+ */
+// TODO add a way to display description of each example (via extension ?)
+function SchemaExamplesList({ schema, indentation = 0 }) {
+  if (!schema.examples() && !schema.default()) {
+    return <Text indentation={indentation}>*No examples*</Text>;
+  }
+  return (
+    <Text indentation={indentation}>
+      {"\n"}
+      {schema.default() ? (
+        <ListItem>
+          Default:
+          <CodeBlock>{JSON.stringify(schema.default(), null, 2)}</CodeBlock>
+        </ListItem>
+      ) : (
+        ""
+      )}
+      {schema.examples().map((example) => (
+        <ListItem>
+          <CodeBlock>{JSON.stringify(example, null, 2)}</CodeBlock>
+        </ListItem>
+      ))}
+    </Text>
+  );
+}
+/**
+ * @param {SchemaInterface} schema
+ */
+function extractDescription(schema, asSummary = false) {
+  let description = schema.description() || "";
+  if (asSummary) {
+    description = description.split("\n")[0].split(".")[0]; // first line/sentence
+    // } else {
+    //   description = description.replace(new RegExp("S*\r?\n", "g"), " ");
+  }
+  description = description.trim();
   const externalDocs = schema.externalDocs();
   // eslint-disable-next-line sonarjs/no-nested-template-literals
   description = externalDocs
@@ -391,143 +135,68 @@ function extractDescription(schema) {
 }
 
 /**
- * @param SchemaInterface schema
+ * @param {SchemaInterface} schema
  */
-function extractSummary(schema) {
-  let description = (schema.description() || "").replace(
-    new RegExp("S*\r?\n", "g"),
-    " "
-  );
-  const externalDocs = schema.externalDocs();
-  // eslint-disable-next-line sonarjs/no-nested-template-literals
-  description = externalDocs
-    ? `${!description.endsWith(".") ? `${description}.` : description} [${
-        externalDocs.description() || "Documentation"
-      }](${externalDocs.url()})`
-    : description;
-  description = description.trim();
-  return description;
-}
-
-function tree(path = "") {
-  path = String(path);
-  const filteredPaths = path.split(".").filter(Boolean);
-  return filteredPaths.join(".");
-}
-
-function buildPath(path = "", field = "") {
-  if (!path) return field;
-  return `${path}.${field}`;
-}
-
-function schemaValues(schema) {
-  if (!schema) return null;
-  const values = [];
-
-  if (schema.default())
-    values.push(
-      `default (\`${SchemaHelpers.prettifyValue(schema.default())}\`)`
-    );
-  if (schema.const())
-    values.push(`const (\`${SchemaHelpers.prettifyValue(schema.const())}\`)`);
-  if (schema.enum()) {
-    const allowed = schema
-      .enum()
-      .map((v) => `\`${SchemaHelpers.prettifyValue(v)}\``)
-      .join(", ");
-    values.push(`allowed (${allowed})`);
+function extractTypeName(schema) {
+  const customType = extractCustomTypeName(schema);
+  if (customType) {
+    return customType;
   }
-  if (schema.examples()) {
-    const examples = schema
-      .examples()
-      .map((v) => `\`${SchemaHelpers.prettifyValue(v)}\``)
-      .join(", ");
-    values.push(`examples (${examples})`);
+  const type = schema.type();
+  if (type === "array") {
+    return `${extractTypeName(schema.items())}[]`;
   }
-
-  return values.join(", ");
+  return type;
 }
 
-function schemaConstraints(schema) {
-  if (!schema) return null;
-  const constraints = [];
-
-  if (schema.format()) constraints.push(`format (\`${schema.format()}\`)`);
-  if (schema.pattern()) constraints.push(`pattern (\`${schema.pattern()}\`)`);
-  if (schema.contentMediaType())
-    constraints.push(`media type (\`${schema.contentMediaType()}\`)`);
-  if (schema.contentEncoding())
-    constraints.push(`encoding (\`${schema.contentEncoding()}\`)`);
-
-  return constraints
-    .concat(SchemaHelpers.humanizeConstraints(schema))
-    .join(", ");
+/**
+ * @param {SchemaInterface} schema
+ * @returns {string|null}
+ */
+export function extractCustomTypeName(schema) {
+  const name = schema.$id() || schema.id() || schema.title();
+  if (name.startsWith("<anonymous")) {
+    return null;
+  }
+  return name;
 }
 
-function schemaNotes({
-  schema,
-  required = false,
-  dependentRequired = [],
-  isCircular = false,
-  tryRenderAdditionalNotes,
-}) {
-  if (!schema) return null;
-  const notes = [];
+// /**
+//  * Recusrively extracts all customTypes from the schema.
+//  * @param {SchemaInterface} schema
+//  * @param {Array<[string, SchemaInterface]>} customTypes
+//  * @returns {Array<[string, SchemaInterface]>} customTypes
+//  */
+// export function listCustomTypes(schema, customTypes = Array()) {
+//   const customTypeName = extractCustomTypeName(schema);
+//   if (
+//     customTypeName &&
+//     !customTypes.find(([name]) => name === customTypeName)
+//   ) {
+//     customTypes.push([customTypeName, schema]);
+//   }
+//   if (schema.type() === "object" && schema.properties()) {
+//     Object.entries(schema.properties()).forEach(
+//       ([propertyName, propertySchema]) => {
+//         listCustomTypes(propertySchema, customTypes);
+//       }
+//     );
+//   }
+//   if (schema.anyOf()) {
+//     schema.anyOf().forEach((s) => {
+//       listCustomTypes(s, customTypes);
+//     });
+//   }
+//   if (schema.oneOf()) {
+//     schema.oneOf().forEach((s) => {
+//       listCustomTypes(s, customTypes);
+//     });
+//   }
+//   if (schema.allOf()) {
+//     schema.allOf().forEach((s) => {
+//       listCustomTypes(s, customTypes);
+//     });
+//   }
 
-  if (schema.deprecated()) notes.push("**deprecated**");
-
-  if (required) notes.push("**required**");
-  if (dependentRequired.length) {
-    const deps = dependentRequired.map((v) => `\`${v}\``).join(", ");
-    notes.push(`**required when defined (${deps})**`);
-  }
-
-  const extensions = schema.extensions();
-
-  // location for channel parameter
-  const parameterLocation = extensions.get(SchemaHelpers.extParameterLocation);
-  if (parameterLocation?.value()) {
-    notes.push(`**parameter location (${parameterLocation.value()})**`);
-  }
-
-  if (isCircular) notes.push("**circular**");
-  if (schema.writeOnly()) notes.push("**write-only**");
-  if (schema.readOnly()) notes.push("**read-only**");
-
-  // additional properties/items
-  if (
-    extensions.get(SchemaHelpers.extRenderAdditionalInfo)?.value() !== false
-  ) {
-    const type = schema.type();
-    const types = Array.isArray(type) ? type : [type];
-
-    // additional properties
-    if (
-      (type === undefined && tryRenderAdditionalNotes) ||
-      types.includes("object")
-    ) {
-      const additionalProperties = schema.additionalProperties();
-      if (additionalProperties === true || additionalProperties === undefined) {
-        notes.push("**additional properties are allowed**");
-      } else if (additionalProperties === false) {
-        notes.push("**additional properties are NOT allowed**");
-      }
-    }
-
-    // additional items
-    if (
-      ((type === undefined && tryRenderAdditionalNotes) ||
-        types.includes("array")) &&
-      Array.isArray(schema.items())
-    ) {
-      const additionalItems = schema.additionalItems();
-      if (additionalItems === true || additionalItems === undefined) {
-        notes.push("**additional items are allowed**");
-      } else if (additionalItems === false) {
-        notes.push("**additional items are NOT allowed**");
-      }
-    }
-  }
-
-  return notes.join(", ");
-}
+//   return customTypes;
+// }

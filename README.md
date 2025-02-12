@@ -97,6 +97,13 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
     - templating ?
   - comparaison: [OpenAPI Generator vs Swagger Codegen v3: Which API Generator Is Best for Your Needs? - Engineer From Nepal](https://engineerfromnepal.com/blog/openapi-generator-vs-swagger-codegen-v3/), [FAQ: General | OpenAPI Generator](https://openapi-generator.tech/docs/faq/)
 
+### AsyncAPI
+
+[AsyncAPI](https://www.asyncapi.com/) is a specification for building asynchronous APIs.
+
+-
+- Difficult to debug generator (generic error message with no context eg: `X is not defined`)
+
 ### Smithy
 
 [Smithy](https://smithy.io/2.0/index.html) is designed to create API for Resources oriented API (ala REST): resources definition and associated operations / lifecycles.

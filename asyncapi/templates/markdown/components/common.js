@@ -1,6 +1,10 @@
 //copy from https://github.com/asyncapi/markdown-template/blob/master/components/common.js
 
-import { Text } from "@asyncapi/generator-react-sdk";
+import {
+  IndentationTypes,
+  Text,
+  withIndendation,
+} from "@asyncapi/generator-react-sdk";
 import { FormatHelpers } from "../helpers/format";
 
 export function Header({ type = 1, childrenContent = "" }) {
@@ -21,8 +25,22 @@ export function List({ list = [] }) {
   return list.map((item, idx) => <ListItem key={idx}>{item}</ListItem>);
 }
 
-export function ListItem({ type = "*", childrenContent = "" }) {
-  return <Text>{`${type} ${childrenContent}`}</Text>;
+export function ListItem({
+  type = "*",
+  childrenContent = "",
+  indentation = 0,
+}) {
+  return (
+    <>
+      {type}{" "}
+      {withIndendation(
+        childrenContent,
+        2 * (indentation + 1),
+        IndentationTypes.SPACES
+      ).trimStart()}
+      {"\n"}
+    </>
+  );
 }
 
 export function Table({ headers = [], rowRenderer = () => [], data = [] }) {
@@ -59,15 +77,18 @@ export function TableRow({ rowRenderer = () => [], entry }) {
   );
 }
 
-export function CodeBlock({ language = "json", childrenContent = "" }) {
+export function CodeBlock({
+  language = "json",
+  childrenContent = "",
+  indentation = 0,
+}) {
   return (
-    <Text>
-      {"```"}
+    <Text indentation={indentation}>
+      {"\n```"}
       {language}
       {"\n"}
       {childrenContent}
-      {"\n"}
-      {"```"}
+      {"\n```"}
     </Text>
   );
 }
@@ -78,4 +99,16 @@ export function BlockQuote({ childrenContent = "" }) {
 
 export function NewLine({ numbers = 1 }) {
   return Array(numbers).fill("\n").join("");
+}
+
+export function Expandable({ title, indentation = 0, childrenContent = "" }) {
+  return (
+    <Text indentation={indentation}>
+      {"<details><summary>"}
+      {title}
+      {"</summary>\n"}
+      {childrenContent}
+      {"</details>"}
+    </Text>
+  );
 }
