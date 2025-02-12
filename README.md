@@ -95,7 +95,19 @@ To have a relevent example, the experiment provide the 3 events (`{subject}.{pre
   - [ ] [Modelina | AsyncAPI Initiative for event-driven APIs](https://www.asyncapi.com/tools/modelina)
     - javascript
     - templating ?
-  - comparison: [OpenAPI Generator vs Swagger Codegen v3: Which API Generator Is Best for Your Needs? - Engineer From Nepal](https://engineerfromnepal.com/blog/openapi-generator-vs-swagger-codegen-v3/), [FAQ: General | OpenAPI Generator](https://openapi-generator.tech/docs/faq/)
+### Smithy
+
+[Smithy](https://smithy.io/2.0/index.html) is designed to create API for Resources oriented API (ala REST): resources definition and associated operations / lifecycles.
+
+- smithy is used by AWS to generate AWS SDKs
+- 2.0 is young and a lot of plugins(code generator) are "work in progress" (see [smithy-lang/awesome-smithy: Awesome Smithy is a curated list of awesome build-tools, code-generators, examples, and other resources related to the Smithy IDL.](https://github.com/smithy-lang/awesome-smithy#client-code-generators))
+  - repositories (plugins, ...) with a lot of contributors & activity (see <https://github.com/smithy-lang>)
+  - plugins are coded in kotlin, java
+  - some plugins are "intimidating" (layout, number of files, "complexity", etc.)
+  - some plugins are not yet published on maven central (see <https://repo.maven.apache.org/maven2/software/amazon/smithy/>) but already documented to be published (e.g. go, python, rust), in fact they are used locally to generate the AWS SDKs
+- useful traits (annotations) and way to define models
+- I didn't find how to only generate payload (data model) without all the service, operations, ... (except by extracting/copying the model from the generated code)
+- No "clear" control on the json representation of the model as it depends on the plugin & protocol
 
 ### Conclusion & feelings (temporary)
 

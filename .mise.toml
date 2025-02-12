@@ -1,4 +1,5 @@
 [tools]
 task = "3"
 java = "21"
-bun = "latest" # alternative to nodejs
+bun = "latest"    # alternative to nodejs
+smithy = "latest"
