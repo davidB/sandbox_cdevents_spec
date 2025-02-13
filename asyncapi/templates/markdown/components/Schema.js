@@ -55,7 +55,9 @@ function SchemaPropertyItem({ schema, name, indentation = 0 }) {
   return (
     <Expandable title={`<strong>${name}</strong>`} indentation={indentation}>
       <Text />
-      <ListItem>Type: {extractTypeName(schema)}</ListItem>
+      <ListItem>
+        Type: <LinkToType typeName={extractTypeName(schema)} />
+      </ListItem>
       <ListItem>Description: {extractDescription(schema)}</ListItem>
       <ListItem>Constraints: ?</ListItem>
       <ListItem>
@@ -159,6 +161,28 @@ export function extractCustomTypeName(schema) {
     return null;
   }
   return name;
+}
+
+/**
+ * @param {string} customType
+ * @returns {string|null}
+ */
+export function pathOfCustomType(customType) {
+  return `${customType}.md`;
+}
+
+/**
+ * @param {{typeName: string}} param0
+ */
+export function LinkToType({ typeName }) {
+  if (
+    ["null", "undefined", "object", "string", "number", "array"].includes(
+      typeName
+    )
+  ) {
+    return typeName;
+  }
+  return `[\`${typeName}\`](${pathOfCustomType(typeName)})`;
 }
 
 // /**

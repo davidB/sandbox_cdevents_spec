@@ -1,5 +1,9 @@
 import { File, Text } from "@asyncapi/generator-react-sdk";
-import { Schema, extractCustomTypeName } from "../components/Schema";
+import {
+  Schema,
+  extractCustomTypeName,
+  pathOfCustomType,
+} from "../components/Schema";
 //import { Schema } from "@asyncapi/modelina";
 // import { List } from "@asyncapi/markdown-template";
 
@@ -50,6 +54,7 @@ export default function ({ asyncapi, params, originalAsyncAPI }) {
     //   console.log(id);
     // }
 
+    // TODO:
     // document in a predefined order
     // - cdevents.md
     //   - CDEvents
@@ -59,23 +64,30 @@ export default function ({ asyncapi, params, originalAsyncAPI }) {
     // - <stage>.md
     //   - Artifact
     //     - predicates of Artifact
-    files.push(
-      <File name={"main.md"}>
-        <Schema schema={schemasById.get("CDEvent")} />
-      </File>
-    );
-    // schemasById.forEach((schema, id) => {
-    //   console.log(id);
-    //   files.push(
-    //     // We return a react file component and each time we do it, he name of the generated file will be a schema name
-    //     // Content of the file will be a variable representing schema
-    //     <File name={`${schema.id()}.js`}>
-    //       const {schema.id()} = {JSON.stringify(schema._json, null, 2)}
-    //       name: {schema.name}
-    //       title: {schema.title()}
-    //     </File>
-    //   );
-    // });
+    // In this case, how identifying the files name (and link) from just the TypeName?
+    // Alternatives: 1 files per schema (ala apidoc) + 1 overview file (manual or generated)
+    // files.push(
+    //   <File name={"main.md"}>
+    //     <Schema schema={schemasById.get("CDEvent")} />
+    //   </File>
+    // );
+    schemasById.forEach((schema, id) => {
+      console.log(id);
+      // files.push(
+      //   // We return a react file component and each time we do it, he name of the generated file will be a schema name
+      //   // Content of the file will be a variable representing schema
+      //   <File name={`${schema.id()}.js`}>
+      //     const {schema.id()} = {JSON.stringify(schema._json, null, 2)}
+      //     name: {schema.name}
+      //     title: {schema.title()}
+      //   </File>
+      // );
+      files.push(
+        <File name={pathOfCustomType(id)}>
+          <Schema schema={schema} />
+        </File>
+      );
+    });
     // description: {schema.description()}
     // type: {schema.type()}
     // format: {schema.format()}
