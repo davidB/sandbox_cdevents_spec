@@ -1,14 +1,6 @@
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
+from pydantic import BaseModel, Field
 from . import TaskrunStarted
-class Taskrun: 
-  def __init__(self, input: Dict):
-    if 'predicate' in input:
-      self._predicate: TaskrunStarted.TaskrunStarted = input['predicate']
-
-  @property
-  def predicate(self) -> TaskrunStarted.TaskrunStarted:
-    return self._predicate
-  @predicate.setter
-  def predicate(self, predicate: TaskrunStarted.TaskrunStarted):
-    self._predicate = predicate
+class Taskrun(BaseModel): 
+  predicate: Optional[Union[TaskrunStarted.TaskrunStarted]] = Field(default=None)

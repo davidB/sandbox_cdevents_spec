@@ -22,7 +22,7 @@ tasks:
   modelina:generate:
     internal: true
     cmds:
-      # - rm -rf build/{{.LANG}}
+      - rm -rf build/modelina/{{.LANG}}
       - task: modelina
         vars:
           ARGS: "{{.LANG}} spec/asyncapi.yaml -o build/modelina/{{.LANG}} --log-diagnostics {{.ARGS}}"
