@@ -1,9 +1,9 @@
-// ArtifactPredicate represents a union of types: serde_json::Value, ArtifactDeleted
-#[derive(Clone, Debug, Deserialize, Serialize)]
+// ArtifactPredicate represents a union of types: ArtifactPublished, ArtifactDeleted
+#[derive(Clone, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(tag = "kind")]
 pub enum ArtifactPredicate {
     #[serde(rename="ArtifactPublished")]
-    ArtifactPublished(serde_json::Value),
+    ArtifactPublished(crate::ArtifactPublished),
     #[serde(rename="ArtifactDeleted")]
     ArtifactDeleted(crate::ArtifactDeleted),
 }

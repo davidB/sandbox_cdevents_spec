@@ -18,15 +18,33 @@ Artifact:
 
 ArtifactPublished:
   $id: ArtifactPublished
-  $ref: "cdevent.yaml#/Predicate"
+  # $ref: "cdevent.yaml#/Predicate"
+  type: object
+  required:
+    - kind
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      readOnly: true
 
 ArtifactDeleted:
   $id: ArtifactDeleted
-  allOf:
-    - $ref: "cdevent.yaml#/Predicate"
-    - type: object
-      properties:
-        user:
-          type: string
-          minLength: 1
-      additionalProperties: false
+  # allOf:
+  #   - $ref: "cdevent.yaml#/Predicate"
+  #   - type: object
+  #     properties:
+  #       user:
+  #         type: string
+  #         minLength: 1
+  type: object
+  required:
+    - kind
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      readOnly: true
+    user:
+      type: string
+      minLength: 1
