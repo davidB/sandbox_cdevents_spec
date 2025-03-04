@@ -4,3 +4,4 @@ build
 node_modules
 bun.lockb
 __transpiled
+!asyncapi/build
